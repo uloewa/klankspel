@@ -219,9 +219,19 @@ function stopOpname() {
 }
 
 const knop = $('opnemen');
-knop.addEventListener('pointerdown', e => { e.preventDefault(); knop.setPointerCapture(e.pointerId); startOpname(); });
+knop.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  // Opname EERST starten. setPointerCapture kan gooien op een ander toestel of in de
+  // geïnstalleerde app; stond die aanroep ervoor, dan startte de opname stil niet.
+  startOpname();
+  try { knop.setPointerCapture(e.pointerId); } catch { /* mag mislukken */ }
+});
 knop.addEventListener('pointerup', stopOpname);
 knop.addEventListener('pointercancel', stopOpname);
+// Vangnet: glijdt de vinger van de knop af zonder pointer capture, dan komt het
+// loslaten nooit bij de knop aan en zou de opname eeuwig doorlopen.
+addEventListener('pointerup', stopOpname);
+addEventListener('pointercancel', stopOpname);
 // Native slepen kaapt anders de pointer-stroom en de opname stopt nooit.
 knop.addEventListener('dragstart', e => e.preventDefault());
 knop.addEventListener('selectstart', e => e.preventDefault());
