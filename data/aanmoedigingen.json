@@ -1,0 +1,36 @@
+{
+  "_lees_dit_eerst": [
+    "Zeg deze zoals je ze thuis echt zegt. Ze zijn bewust Vlaams geschreven:",
+    "geen 'wat knap zeg', geen 'hartstikke', geen 'leuk', geen 'joh'.",
+    "Klinkt een zin niet zoals jij praat — verander hem. Jij bent hier de bron.",
+    "Neem ze op met warmte maar zonder overdrijven: dit gaat ze honderden keren horen."
+  ],
+  "juist": [
+    { "id": "j1", "tekst": "goed zo!" },
+    { "id": "j2", "tekst": "bravo!" },
+    { "id": "j3", "tekst": "juist!" },
+    { "id": "j4", "tekst": "dat is 'm!" },
+    { "id": "j5", "tekst": "ja, die is het!" },
+    { "id": "j6", "tekst": "amai, knap gedaan!" },
+    { "id": "j7", "tekst": "dat kan jij goed" }
+  ],
+  "nog_eens": [
+    { "id": "n1", "tekst": "bijna" },
+    { "id": "n2", "tekst": "luister nog eens" },
+    { "id": "n3", "tekst": "nog een keertje" },
+    { "id": "n4", "tekst": "goed geprobeerd" }
+  ],
+  "_over_nog_eens": [
+    "Dit zijn de zinnen bij een fout antwoord. Ze mogen NOOIT klinken als een terechtwijzing —",
+    "er valt in deze app niets te verliezen. Zeg ze opgewekt, alsof je samen iets zoekt."
+  ],
+  "start_en_stop": [
+    { "id": "s1", "tekst": "dag Ida, zullen we luisteren?", "wanneer": "bij het openen" },
+    { "id": "s2", "tekst": "we stoppen hier — tot morgen!",  "wanneer": "einde sessie, altijd na een goed antwoord" },
+    { "id": "s3", "tekst": "jij hebt goed gewerkt vandaag",  "wanneer": "einde sessie" }
+  ],
+  "_over_start_en_stop": [
+    "s2 is de zin waarmee de app zichzelf afsluit na ongeveer 8 minuten. Hij komt altijd",
+    "na een JUIST antwoord, nooit midden in een fout — zo stopt Ida altijd met een goed gevoel."
+  ]
+}

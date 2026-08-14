@@ -1,0 +1,59 @@
+{
+  "_lees_dit_eerst": [
+    "Dit is wat Thijs inspreekt. Elke regel is EEN klank, niet de naam van de letter.",
+    "Zeg 'mmmm', nooit 'em'. Zeg een korte 'p', nooit 'puh' — die extra 'uh' plakt aan de",
+    "klank vast en maakt het later moeilijker om p-oe-s aan elkaar te plakken tot poes.",
+    "Rekbare klanken hou je 1 a 2 tellen aan. Plofklanken zijn kort en droog.",
+    "Gewoon praten zoals tegen Ida: niet fluisteren, niet overdrijven, niet traag."
+  ],
+  "groepen": {
+    "rekbaar": "Rekbare medeklinkers — aanhouden. Deze zijn het makkelijkst te horen, dus hiermee begint Ida.",
+    "kort_klinker": "Korte klinkers",
+    "lang_klinker": "Lange klinkers en tweetekenklanken",
+    "tweeklank": "Tweeklanken",
+    "plof": "Plofklanken — kort en droog, GEEN 'uh' erachter",
+    "overig": "Overige"
+  },
+  "klanken": [
+    { "id": "m",   "groep": "rekbaar",      "zeg": "mmmm",  "als_in": "maan",  "start": 1 },
+    { "id": "s",   "groep": "rekbaar",      "zeg": "ssss",  "als_in": "sok",   "start": 2 },
+    { "id": "r",   "groep": "rekbaar",      "zeg": "rrrr",  "als_in": "roos",  "start": 3 },
+    { "id": "v",   "groep": "rekbaar",      "zeg": "vvvv",  "als_in": "vis",   "start": 4 },
+    { "id": "l",   "groep": "rekbaar",      "zeg": "llll",  "als_in": "lam",   "start": 7 },
+    { "id": "n",   "groep": "rekbaar",      "zeg": "nnnn",  "als_in": "neus",  "start": 9 },
+    { "id": "f",   "groep": "rekbaar",      "zeg": "ffff",  "als_in": "fiets" },
+    { "id": "z",   "groep": "rekbaar",      "zeg": "zzzz",  "als_in": "zon" },
+    { "id": "ng",  "groep": "rekbaar",      "zeg": "nnngg", "als_in": "ring" },
+
+    { "id": "a",   "groep": "kort_klinker", "zeg": "a",     "als_in": "kat",   "start": 5 },
+    { "id": "i",   "groep": "kort_klinker", "zeg": "i",     "als_in": "vis",   "start": 6 },
+    { "id": "o",   "groep": "kort_klinker", "zeg": "o",     "als_in": "sok",   "start": 8 },
+    { "id": "e",   "groep": "kort_klinker", "zeg": "e",     "als_in": "pen",   "start": 10 },
+    { "id": "u",   "groep": "kort_klinker", "zeg": "u",     "als_in": "bus" },
+
+    { "id": "aa",  "groep": "lang_klinker", "zeg": "aaaa",  "als_in": "maan" },
+    { "id": "ee",  "groep": "lang_klinker", "zeg": "eeee",  "als_in": "beer" },
+    { "id": "oo",  "groep": "lang_klinker", "zeg": "oooo",  "als_in": "boom" },
+    { "id": "uu",  "groep": "lang_klinker", "zeg": "uuuu",  "als_in": "vuur" },
+    { "id": "ie",  "groep": "lang_klinker", "zeg": "iiie",  "als_in": "riem" },
+    { "id": "oe",  "groep": "lang_klinker", "zeg": "oeoe",  "als_in": "koe" },
+    { "id": "eu",  "groep": "lang_klinker", "zeg": "euuu",  "als_in": "neus" },
+
+    { "id": "ei",  "groep": "tweeklank",    "zeg": "ei",    "als_in": "ei — klinkt gelijk als de ij" },
+    { "id": "ui",  "groep": "tweeklank",    "zeg": "ui",    "als_in": "huis" },
+    { "id": "ou",  "groep": "tweeklank",    "zeg": "ou",    "als_in": "koud — klinkt gelijk als de au" },
+
+    { "id": "p",   "groep": "plof",         "zeg": "p",     "als_in": "poes",  "start": 11 },
+    { "id": "t",   "groep": "plof",         "zeg": "t",     "als_in": "taart", "start": 12 },
+    { "id": "k",   "groep": "plof",         "zeg": "k",     "als_in": "koek",  "start": 13 },
+    { "id": "b",   "groep": "plof",         "zeg": "b",     "als_in": "bal" },
+    { "id": "d",   "groep": "plof",         "zeg": "d",     "als_in": "duim" },
+
+    { "id": "h",   "groep": "overig",       "zeg": "hhh",   "als_in": "huis" },
+    { "id": "j",   "groep": "overig",       "zeg": "jjj",   "als_in": "jas" },
+    { "id": "w",   "groep": "overig",       "zeg": "www",   "als_in": "wolk" },
+    { "id": "g",   "groep": "overig",       "zeg": "ggg",   "als_in": "goed — jouw zachte g, niet de Hollandse" },
+    { "id": "ch",  "groep": "overig",       "zeg": "chchch","als_in": "acht" },
+    { "id": "sch", "groep": "overig",       "zeg": "sch",   "als_in": "school" }
+  ]
+}

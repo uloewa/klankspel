@@ -1,0 +1,46 @@
+{
+  "_lees_dit_eerst": [
+    "Elk woord moest door drie zeven:",
+    "1. KLANKZUIVER — geschreven zoals het klinkt. Daarom staat 'hond' er niet in:",
+    "   die schrijf je met een d maar je zegt een t. Verwarrend voor een beginner.",
+    "2. ONDUBBELZINNIGE EMOJI — Ida moet er meteen het juiste woord bij denken.",
+    "   Daarom geen 🐰 (haas of konijn?) en geen 🚗 (auto of wagen?).",
+    "3. VLAAMS — het woord dat een kind hier zelf zegt. Vandaar 'velo' en 'poes'.",
+    "Spreek het woord gewoon uit, in een keer, zoals je het tegen Ida zou zeggen."
+  ],
+  "woorden": [
+    { "woord": "maan",  "emoji": "🌙", "begint_met": "m" },
+    { "woord": "muis",  "emoji": "🐭", "begint_met": "m" },
+    { "woord": "sok",   "emoji": "🧦", "begint_met": "s" },
+    { "woord": "ster",  "emoji": "⭐", "begint_met": "s" },
+    { "woord": "roos",  "emoji": "🌹", "begint_met": "r" },
+    { "woord": "vis",   "emoji": "🐟", "begint_met": "v" },
+    { "woord": "velo",  "emoji": "🚲", "begint_met": "v" },
+    { "woord": "aap",   "emoji": "🐵", "begint_met": "a" },
+    { "woord": "kat",   "emoji": "🐈", "begint_met": "k" },
+    { "woord": "koek",  "emoji": "🍪", "begint_met": "k" },
+    { "woord": "kip",   "emoji": "🐔", "begint_met": "k" },
+    { "woord": "poes",  "emoji": "🐱", "begint_met": "p" },
+    { "woord": "pen",   "emoji": "🖊️", "begint_met": "p" },
+    { "woord": "taart", "emoji": "🎂", "begint_met": "t" },
+    { "woord": "boom",  "emoji": "🌳", "begint_met": "b" },
+    { "woord": "bal",   "emoji": "⚽", "begint_met": "b" },
+    { "woord": "beer",  "emoji": "🐻", "begint_met": "b" },
+    { "woord": "boot",  "emoji": "⛵", "begint_met": "b" },
+    { "woord": "neus",  "emoji": "👃", "begint_met": "n" },
+    { "woord": "koe",   "emoji": "🐄", "begint_met": "k" },
+    { "woord": "zon",   "emoji": "☀️", "begint_met": "z" },
+    { "woord": "huis",  "emoji": "🏠", "begint_met": "h" },
+    { "woord": "duim",  "emoji": "👍", "begint_met": "d" }
+  ],
+  "rijmparen": [
+    { "een": "maan", "twee": "aan",  "stoorzender": "vis"  },
+    { "een": "vis",  "twee": "kis",  "stoorzender": "boom" },
+    { "een": "sok",  "twee": "bok",  "stoorzender": "koe"  },
+    { "een": "boom", "twee": "zoom", "stoorzender": "kat"  }
+  ],
+  "_over_de_rijmparen": [
+    "Nog niet af. Rijmen vraagt woordparen die echt rijmen EN allebei een duidelijke emoji",
+    "hebben, en dat is een smalle doorgang. Wordt uitgewerkt zodra deze lijst goedgekeurd is."
+  ]
+}
