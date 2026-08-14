@@ -5,7 +5,8 @@
     "   die schrijf je met een d maar je zegt een t. Verwarrend voor een beginner.",
     "2. ONDUBBELZINNIGE EMOJI — Ida moet er meteen het juiste woord bij denken.",
     "   Daarom geen 🐰 (haas of konijn?) en geen 🚗 (auto of wagen?).",
-    "3. VLAAMS — het woord dat een kind hier zelf zegt. Vandaar 'velo' en 'poes'.",
+    "3. VLAAMS — het woord dat een kind hier zelf zegt. Vandaar 'poes'.",
+    "   ('fiets' en niet 'velo': Thijs bevestigde dat Ida fiets zegt, 14/08/2026.)",
     "Spreek het woord gewoon uit, in een keer, zoals je het tegen Ida zou zeggen."
   ],
   "woorden": [
@@ -15,7 +16,7 @@
     { "woord": "ster",  "emoji": "⭐", "begint_met": "s" },
     { "woord": "roos",  "emoji": "🌹", "begint_met": "r" },
     { "woord": "vis",   "emoji": "🐟", "begint_met": "v" },
-    { "woord": "velo",  "emoji": "🚲", "begint_met": "v" },
+    { "woord": "fiets", "emoji": "🚲", "begint_met": "f" },
     { "woord": "aap",   "emoji": "🐵", "begint_met": "a" },
     { "woord": "kat",   "emoji": "🐈", "begint_met": "k" },
     { "woord": "koek",  "emoji": "🍪", "begint_met": "k" },
@@ -31,7 +32,17 @@
     { "woord": "koe",   "emoji": "🐄", "begint_met": "k" },
     { "woord": "zon",   "emoji": "☀️", "begint_met": "z" },
     { "woord": "huis",  "emoji": "🏠", "begint_met": "h" },
-    { "woord": "duim",  "emoji": "👍", "begint_met": "d" }
+    { "woord": "duim",  "emoji": "👍", "begint_met": "d" },
+    { "woord": "lepel", "emoji": "🥄", "begint_met": "l" },
+    { "woord": "emmer", "emoji": "🪣", "begint_met": "e" }
+  ],
+  "_gaten_bewust_gelaten": [
+    "De korte klinkers i, o en u hebben geen woord dat ermee BEGINT. Dat is een eigenschap",
+    "van het Nederlands, niet een gaatje in de lijst: woorden die met een korte i, o of u",
+    "beginnen en een ondubbelzinnig plaatje hebben, bestaan nauwelijks.",
+    "Gevolg: die klinkers komen niet voor in het spel 'welke letter hoort bij dit plaatje'.",
+    "Didactisch is dat juist: een klinker hoor je in het MIDDEN van een woord (v-i-s), en dat",
+    "is een andere, latere vaardigheid dan de eerste klank van een woord herkennen."
   ],
   "rijmparen": [
     { "een": "maan", "twee": "aan",  "stoorzender": "vis"  },
