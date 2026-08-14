@@ -33,9 +33,26 @@
   .stip { width:.9rem; height:.9rem; border-radius:50%; background:var(--zacht); flex:none; }
   .ja  .stip { background:var(--goed);   } .ja  { color:var(--goed);   }
   .nee .stip { background:var(--let-op); } .nee { color:var(--let-op); }
+
+  /* De ouderpoort: rechtsboven, onzichtbaar, drie seconden ingedrukt houden.
+     Geen knop, geen tekst, geen icoontje — niets dat Ida uitnodigt om te tikken. */
+  #ouderpoort {
+    position:fixed; top:0; right:0; width:72px; height:72px;
+    background:none; border:none; padding:0; cursor:default;
+    touch-action:none; -webkit-user-select:none; user-select:none;
+  }
+  #ouderpoort::after {
+    content:""; position:absolute; inset:auto 10px 10px auto;
+    width:8px; height:8px; border-radius:50%;
+    background:var(--vriend); opacity:0; transition:opacity .2s ease, transform .2s ease;
+  }
+  #ouderpoort.gaat::after { opacity:.9; transform:scale(2.4); transition:transform 3s linear, opacity .2s ease; }
+  #ouderpoort:focus-visible { outline:2px solid var(--vriend); outline-offset:-4px; }
 </style>
 </head>
 <body>
+
+<button id="ouderpoort" aria-label="Ouderscherm — houd drie seconden ingedrukt"></button>
 
 <h1>Klankspel</h1>
 <p>Nog leeg. Dit scherm toont alleen dat de app op de tablet werkt.</p>
@@ -85,6 +102,25 @@
   // 3. Als app of in de browser geopend?
   const alsApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   zet('r-app', alsApp, 'geopend als: ' + (alsApp ? 'app (geen browserbalk)' : 'browser — nog niet toegevoegd aan startscherm'));
+
+  // 4. Ouderpoort: drie seconden ingedrukt houden. Loslaten annuleert.
+  const poort = document.getElementById('ouderpoort');
+  let klok = null;
+  function begin(e) {
+    e.preventDefault();
+    poort.setPointerCapture?.(e.pointerId);
+    poort.classList.add('gaat');
+    klok = setTimeout(() => { location.href = './ouder.html'; }, 3000);
+  }
+  function stop() {
+    clearTimeout(klok); klok = null;
+    poort.classList.remove('gaat');
+  }
+  poort.addEventListener('pointerdown', begin);
+  poort.addEventListener('pointerup', stop);
+  poort.addEventListener('pointercancel', stop);
+  poort.addEventListener('pointerleave', stop);
+  poort.addEventListener('dragstart', e => e.preventDefault());
 </script>
 
 </body>

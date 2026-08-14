@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F6EBD9">
+<title>Ouderscherm — Klankspel</title>
+<link rel="icon" href="./icon-192.png" type="image/png">
+<link rel="stylesheet" href="./stijl.css">
+<style>
+  @font-face{font-family:"Andika";src:url("./fonts/Andika-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Andika";src:url("./fonts/Andika-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+
+  body{font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;
+    display:flex;flex-direction:column;min-height:100%}
+  .blad{width:100%;max-width:46rem;margin:0 auto;padding:1.1rem 1.1rem 3rem;
+    display:flex;flex-direction:column;gap:1.4rem;flex:1}
+
+  .top{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .top a{color:var(--zacht);text-decoration:none;font-size:.95rem}
+  h1{font-family:var(--letter);font-size:1.5rem;margin:0}
+
+  .balk{height:10px;border-radius:999px;background:var(--kaart-diep);overflow:hidden}
+  .balk i{display:block;height:100%;background:var(--goed);width:0;transition:width .3s ease}
+  .telling{display:flex;justify-content:space-between;font-size:.9rem;color:var(--zacht);
+    font-variant-numeric:tabular-nums}
+
+  .kaart{background:var(--kaart);border:1px solid var(--kaart-diep);border-radius:18px;
+    padding:1.2rem;display:flex;flex-direction:column;gap:1rem}
+
+  .groepnaam{font-size:.76rem;letter-spacing:.09em;text-transform:uppercase;color:var(--zacht)}
+  .toon{font-family:var(--letter);font-weight:700;font-size:clamp(3.5rem,17vw,6rem);
+    line-height:1;text-align:center}
+  .zeg-dit{font-family:var(--letter);font-weight:700;font-size:clamp(1.6rem,7vw,2.4rem);
+    text-align:center;color:var(--vriend)}
+  .hint{text-align:center;color:var(--zacht);font-size:.95rem;margin:0}
+  .instructie{text-align:center;font-size:1rem;margin:0}
+
+  .knop{font:inherit;border:none;border-radius:14px;padding:.85rem 1.1rem;cursor:pointer;
+    background:var(--kaart);border:1px solid var(--kaart-diep);color:var(--inkt);
+    min-height:52px}
+  .knop:active{transform:translateY(2px)}
+  .knop.stil{color:var(--zacht)}
+
+  #opnemen{
+    width:100%;min-height:var(--raak-min);border:none;border-radius:18px;
+    background:var(--vriend);box-shadow:0 5px 0 var(--vriend-diep);color:#FFF9F2;
+    font:inherit;font-size:1.15rem;font-weight:600;cursor:pointer;
+    touch-action:none;user-select:none;padding:1.1rem;
+  }
+  #opnemen:active,#opnemen.bezig{transform:translateY(4px);box-shadow:0 1px 0 var(--vriend-diep)}
+  #opnemen.bezig{background:#B4453C}
+  #opnemen[disabled]{opacity:.45;cursor:default}
+
+  .rij-knoppen{display:flex;gap:.6rem;flex-wrap:wrap}
+  .rij-knoppen .knop{flex:1;min-width:8rem}
+
+  .melding{margin:0;font-size:.95rem;text-align:center;min-height:1.4em}
+  .melding.goed{color:var(--goed)} .melding.let-op{color:var(--let-op)}
+
+  .raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.4rem,1fr));gap:.32rem}
+  .raster button{aspect-ratio:1;border-radius:8px;border:1px solid var(--kaart-diep);
+    background:var(--kaart);font:inherit;font-size:.8rem;color:var(--zacht);cursor:pointer;
+    padding:0;overflow:hidden;font-family:var(--letter)}
+  .raster button.klaar{background:var(--goed);border-color:var(--goed);color:#FFF9F2}
+  .raster button.hier{outline:3px solid var(--vriend);outline-offset:1px}
+
+  h2{font-size:1.05rem;margin:0}
+  .uitleg{margin:0;color:var(--zacht);font-size:.92rem}
+  details summary{cursor:pointer;color:var(--zacht);font-size:.95rem}
+  .stem-uit{font-size:.92rem;color:var(--zacht);margin:0}
+</style>
+</head>
+<body>
+<div class="blad">
+
+  <div class="top">
+    <a href="./">‹ terug naar de app</a>
+    <h1>Ouderscherm</h1>
+  </div>
+
+  <section class="kaart">
+    <h2>Opnamestudio</h2>
+    <p class="uitleg">Houd de oranje knop ingedrukt en spreek. Loslaten = klaar, je hoort het
+    meteen terug en hij gaat vanzelf door. Niet goed? Neem gewoon opnieuw op.</p>
+
+    <div class="telling"><span id="tel">—</span><span id="groep"></span></div>
+    <div class="balk"><i id="balk"></i></div>
+
+    <div class="toon" id="toon"></div>
+    <div class="zeg-dit" id="zegdit">…</div>
+    <p class="hint" id="hint"></p>
+
+    <button id="opnemen" disabled>Microfoon voorbereiden…</button>
+    <p class="melding" id="melding"></p>
+
+    <div class="rij-knoppen">
+      <button class="knop" id="vorige">‹ vorige</button>
+      <button class="knop" id="beluister">beluister</button>
+      <button class="knop" id="volgende">volgende ›</button>
+    </div>
+  </section>
+
+  <section class="kaart">
+    <h2>Alle 74</h2>
+    <p class="uitleg">Groen = ingesproken. Tik er een aan om ernaartoe te springen.</p>
+    <div class="raster" id="raster"></div>
+  </section>
+
+  <section class="kaart">
+    <h2>Reservekopie</h2>
+    <p class="uitleg">Bewaar dit bestand ergens veilig. Raakt de tablet gewist, dan is dat het
+    verschil tussen één klik en veertig minuten opnieuw inspreken.</p>
+    <div class="rij-knoppen">
+      <button class="knop" id="uitvoer">bewaar reservekopie</button>
+      <button class="knop" id="invoer-knop">herstel uit bestand</button>
+      <input type="file" id="invoer" accept="application/json,.json" hidden>
+    </div>
+    <p class="melding" id="pak-melding"></p>
+  </section>
+
+  <details>
+    <summary>Stem op dit toestel</summary>
+    <p class="stem-uit" id="stem-uit">nakijken…</p>
+  </details>
+
+</div>
+
+<script type="module">
+import { Opslag } from './js/opslag.js';
+import { Zeg }    from './js/zeg.js';
+import { laadLijst } from './js/lijst.js';
+
+const $ = id => document.getElementById(id);
+let lijst = [], i = 0, stroom = null, recorder = null, startTijd = 0, bezig = false;
+
+const KORTSTE = 300; // ms — korter is een misklik, geen opname
+
+function toon() {
+  const item = lijst[i];
+  $('tel').textContent = `${i + 1} van ${lijst.length}`;
+  $('groep').textContent = item.groep || '';
+  $('toon').textContent = item.toon || '';
+  $('toon').style.display = item.toon ? '' : 'none';
+  $('zegdit').textContent = '“' + item.zeg + '”';
+  $('hint').textContent = item.hint || '';
+  const klaar = lijst.filter(x => Zeg.heeftOpname(x.id)).length;
+  $('balk').style.width = (klaar / lijst.length * 100) + '%';
+  $('opnemen').textContent = Zeg.heeftOpname(item.id)
+    ? 'houd ingedrukt om opnieuw op te nemen'
+    : 'houd ingedrukt en spreek';
+  [...$('raster').children].forEach((b, n) => {
+    b.classList.toggle('hier', n === i);
+    b.classList.toggle('klaar', Zeg.heeftOpname(lijst[n].id));
+  });
+  $('melding').textContent = '';
+  $('melding').className = 'melding';
+}
+
+function ga(n) {
+  i = Math.max(0, Math.min(lijst.length - 1, n));
+  toon();
+  $('raster').children[i]?.scrollIntoView({ block: 'nearest' });
+}
+
+function zeg(tekst, soort = '') {
+  $('melding').textContent = tekst;
+  $('melding').className = 'melding ' + soort;
+}
+
+async function microfoon() {
+  try {
+    stroom = await navigator.mediaDevices.getUserMedia({ audio: true });
+    $('opnemen').disabled = false;
+    toon();
+  } catch (e) {
+    $('opnemen').textContent = 'geen toegang tot de microfoon';
+    zeg('Geef deze pagina toestemming voor de microfoon en herlaad.', 'let-op');
+  }
+}
+
+function startOpname() {
+  if (bezig || !stroom) return;
+  bezig = true;
+  const stukken = [];
+  const type = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ? 'audio/webm;codecs=opus' : '';
+  recorder = new MediaRecorder(stroom, type ? { mimeType: type } : undefined);
+  recorder.ondataavailable = e => { if (e.data.size) stukken.push(e.data); };
+  recorder.onstop = async () => {
+    bezig = false;
+    $('opnemen').classList.remove('bezig');
+    const duur = Date.now() - startTijd;
+    if (duur < KORTSTE) { zeg('Te kort — even ingedrukt houden terwijl je spreekt.', 'let-op'); return; }
+    const blob = new Blob(stukken, { type: recorder.mimeType || 'audio/webm' });
+    const item = lijst[i];
+    await Opslag.zet(item.id, blob);
+    Zeg.onthoud(item.id);
+    toon();
+    zeg('opgenomen — je hoort het nu terug', 'goed');
+    // wachten tot het geluid ECHT klaar is: een vaste wachttijd kapt een langer
+    // zinnetje af en dan springt hij door terwijl je nog luistert
+    await Zeg.zeg(item.id, null, { wacht: true });
+    setTimeout(() => {
+      if (i < lijst.length - 1) ga(i + 1);
+      else zeg('Alles ingesproken. Vergeet de reservekopie niet.', 'goed');
+    }, 350);
+  };
+  startTijd = Date.now();
+  recorder.start();
+  $('opnemen').classList.add('bezig');
+  zeg('aan het opnemen…');
+}
+
+function stopOpname() {
+  if (recorder && recorder.state === 'recording') recorder.stop();
+}
+
+const knop = $('opnemen');
+knop.addEventListener('pointerdown', e => { e.preventDefault(); knop.setPointerCapture(e.pointerId); startOpname(); });
+knop.addEventListener('pointerup', stopOpname);
+knop.addEventListener('pointercancel', stopOpname);
+// Native slepen kaapt anders de pointer-stroom en de opname stopt nooit.
+knop.addEventListener('dragstart', e => e.preventDefault());
+knop.addEventListener('selectstart', e => e.preventDefault());
+
+$('vorige').onclick    = () => ga(i - 1);
+$('volgende').onclick  = () => ga(i + 1);
+$('beluister').onclick = () => Zeg.zeg(lijst[i].id, lijst[i].terugval);
+
+$('uitvoer').onclick = async () => {
+  const blob = await Opslag.naarBestand();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'klankspel-stempak.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  $('pak-melding').textContent = 'Bewaard. Zet het bestand ergens veilig.';
+  $('pak-melding').className = 'melding goed';
+};
+
+$('invoer-knop').onclick = () => $('invoer').click();
+$('invoer').onchange = async e => {
+  const b = e.target.files[0];
+  if (!b) return;
+  try {
+    const n = await Opslag.uitBestand(b);
+    await Zeg.laad();
+    toon();
+    $('pak-melding').textContent = `${n} opnames teruggezet.`;
+    $('pak-melding').className = 'melding goed';
+  } catch (err) {
+    $('pak-melding').textContent = err.message;
+    $('pak-melding').className = 'melding let-op';
+  }
+};
+
+(async function start() {
+  lijst = await laadLijst();
+  await Zeg.laad();
+  // Zinnetjes hebben geen letter of plaatje: daar toont het vakje het nummer uit de
+  // opnamelijst, zodat het overeenkomt met het blad waar je van leest.
+  $('raster').innerHTML = lijst.map((x, n) =>
+    `<button data-n="${n}" title="${x.zeg.replace(/"/g, '')}">${x.toon || (n + 1)}</button>`).join('');
+  $('raster').onclick = e => { const b = e.target.closest('button'); if (b) ga(+b.dataset.n); };
+  toon();
+  await microfoon();
+
+  const s = Zeg.stemInfo();
+  $('stem-uit').textContent = !s.naam
+    ? 'Dit toestel heeft geen Nederlandse computerstem. Dat geeft niet zodra je alles hebt ingesproken.'
+    : s.vlaams
+      ? `Vlaamse stem gevonden: ${s.naam}. Goed.`
+      : `Alleen ${s.naam} (${s.taal}) — dat is geen Vlaamse stem. Bij te zetten via Instellingen → Talen → Tekst-naar-spraak → Nederlands (België). Zodra je alles hebt ingesproken hoort Ida hem toch niet meer.`;
+})();
+</script>
+</body>
+</html>
