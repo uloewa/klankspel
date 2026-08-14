@@ -118,6 +118,7 @@
       <input type="file" id="invoer" accept="application/json,.json" hidden>
     </div>
     <p class="melding" id="pak-melding"></p>
+    <p class="stem-uit" id="opslag-uit">opslag nakijken…</p>
   </section>
 
   <details>
@@ -256,6 +257,31 @@ $('invoer').onchange = async e => {
   }
 };
 
+/* Android mag de opslag van een website opruimen als het toestel plaats nodig heeft.
+   Voor gewone websites is dat prima; hier zou het 40 minuten inspreken wissen zonder
+   waarschuwing. Met deze vraag markeert de browser de opslag als blijvend.
+   Werkt alleen als de app echt geïnstalleerd is — nog een reden voor het app-icoon. */
+async function beschermOpslag() {
+  const uit = $('opslag-uit');
+  if (!navigator.storage || !navigator.storage.persist) {
+    uit.textContent = 'Deze browser kan de opslag niet beschermen. Maak zeker een reservekopie.';
+    return;
+  }
+  let blijvend = await navigator.storage.persisted();
+  if (!blijvend) blijvend = await navigator.storage.persist();
+
+  let plaats = '';
+  if (navigator.storage.estimate) {
+    const e = await navigator.storage.estimate();
+    if (e.usage) plaats = ` Opnames nemen ${(e.usage / 1048576).toFixed(1)} MB in.`;
+  }
+  uit.textContent = blijvend
+    ? 'Opslag is beschermd: Android ruimt je opnames niet zomaar op.' + plaats
+    : 'Let op: Android mag deze opslag opruimen als het toestel plaats nodig heeft. ' +
+      'Je reservekopie is dan je enige vangnet.' + plaats;
+  uit.style.color = blijvend ? 'var(--goed)' : 'var(--let-op)';
+}
+
 (async function start() {
   lijst = await laadLijst();
   await Zeg.laad();
@@ -265,6 +291,17 @@ $('invoer').onchange = async e => {
     `<button data-n="${n}" title="${x.zeg.replace(/"/g, '')}">${x.toon || (n + 1)}</button>`).join('');
   $('raster').onclick = e => { const b = e.target.closest('button'); if (b) ga(+b.dataset.n); };
   toon();
+  await beschermOpslag();
+
+  // Alles ingesproken? Dan is de reservekopie het enige wat er nog toe doet.
+  if (lijst.every(x => Zeg.heeftOpname(x.id))) {
+    $('pak-melding').textContent = 'Alle ' + lijst.length + ' opnames staan erin. Bewaar nu een reservekopie.';
+    $('pak-melding').className = 'melding let-op';
+    $('uitvoer').style.background = 'var(--vriend)';
+    $('uitvoer').style.color = '#FFF9F2';
+    $('uitvoer').style.borderColor = 'var(--vriend)';
+  }
+
   await microfoon();
 
   const s = Zeg.stemInfo();
