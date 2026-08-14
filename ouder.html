@@ -70,6 +70,11 @@
   .uitleg{margin:0;color:var(--zacht);font-size:.92rem}
   details summary{cursor:pointer;color:var(--zacht);font-size:.95rem}
   .stem-uit{font-size:.92rem;color:var(--zacht);margin:0}
+  #status{display:flex;flex-direction:column;gap:.5rem;font-size:.95rem}
+  .regel{display:flex;align-items:center;gap:.6rem}
+  .stip{width:.85rem;height:.85rem;border-radius:50%;background:var(--zacht);flex:none}
+  .ja .stip{background:var(--goed)} .ja{color:var(--goed)}
+  .nee .stip{background:var(--let-op)} .nee{color:var(--let-op)}
 </style>
 </head>
 <body>
@@ -79,6 +84,25 @@
     <a href="./">‹ terug naar de app</a>
     <h1>Ouderscherm</h1>
   </div>
+
+  <section class="kaart">
+    <h2>Wat deed Ida</h2>
+    <p class="uitleg">Blijft op het toestel. Dit is waarop we na twee weken bijsturen —
+    zonder dit is elke aanpassing een gok.</p>
+    <p class="stem-uit" id="log-uit">nakijken…</p>
+    <div class="rij-knoppen">
+      <button class="knop" id="log-uitvoer">bewaar het logboek</button>
+    </div>
+  </section>
+
+  <section class="kaart">
+    <h2>Hoe staat de app erbij</h2>
+    <div id="status">
+      <div class="regel" id="r-app"><span class="stip"></span><span>geopend als: nakijken…</span></div>
+      <div class="regel" id="r-sw"><span class="stip"></span><span>offline-geheugen: nakijken…</span></div>
+      <div class="regel" id="r-stem"><span class="stip"></span><span>stem van papa: nakijken…</span></div>
+    </div>
+  </section>
 
   <section class="kaart">
     <h2>Opnamestudio</h2>
@@ -131,6 +155,7 @@
 <script type="module">
 import { Opslag } from './js/opslag.js';
 import { Zeg }    from './js/zeg.js';
+import { Log }    from './js/log.js';
 import { laadLijst } from './js/lijst.js';
 
 const $ = id => document.getElementById(id);
@@ -292,9 +317,51 @@ async function beschermOpslag() {
   uit.style.color = blijvend ? 'var(--goed)' : 'var(--let-op)';
 }
 
+function toonStatus() {
+  const zetR = (id, ok, tekst) => {
+    const el = $(id);
+    el.className = 'regel ' + (ok ? 'ja' : 'nee');
+    el.lastElementChild.textContent = tekst;
+  };
+  const alsApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  zetR('r-app', alsApp, 'geopend als: ' + (alsApp ? 'app' : 'browser — nog niet op het startscherm'));
+  navigator.serviceWorker?.getRegistration().then(r =>
+    zetR('r-sw', !!(r && r.active), 'offline-geheugen: ' + (r && r.active ? 'aan' : 'uit')));
+  const n = Zeg.aantalOpnames();
+  zetR('r-stem', n > 0, n > 0 ? `stem van papa: ${n} opnames` : 'stem van papa: geen opnames hier');
+}
+
+function toonLog() {
+  const s = Log.samenvatting();
+  if (!s.antwoorden) {
+    $('log-uit').textContent = 'Nog niets gespeeld.';
+    return;
+  }
+  const lastig = Object.entries(s.perLetter)
+    .filter(([, v]) => v.fout > v.juist)
+    .map(([l]) => l);
+  $('log-uit').textContent =
+    `${s.sessies} keer gespeeld, ${s.antwoorden} antwoorden, ${s.juistPercent}% juist. ` +
+    (s.uitgespeeld ? `${s.uitgespeeld}× tot het einde gespeeld` : 'nog nooit tot het einde') +
+    (s.afgehaakt ? `, ${s.afgehaakt}× tussentijds weggegaan` : '') + '. ' +
+    (lastig.length ? 'Blijft lastig: ' + lastig.join(', ') + '.' : 'Geen enkele letter loopt structureel mis.');
+}
+
+$('log-uitvoer').onclick = () => {
+  const blob = new Blob([JSON.stringify({ samenvatting: Log.samenvatting(), regels: Log.alles() }, null, 1)],
+    { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'klankspel-logboek.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+};
+
 (async function start() {
   lijst = await laadLijst();
   await Zeg.laad();
+  toonStatus();
+  toonLog();
   // Zinnetjes hebben geen letter of plaatje: daar toont het vakje het nummer uit de
   // opnamelijst, zodat het overeenkomt met het blad waar je van leest.
   $('raster').innerHTML = lijst.map((x, n) =>

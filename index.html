@@ -11,139 +11,266 @@
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="stylesheet" href="./stijl.css">
 <style>
-  /* Andika (SIL, OFL) — gemaakt voor beginnende lezers: enkele-lus a en g, de vorm die
-     kleuters schrijven. Meegeleverd, nooit van een CDN: de app moet offline werken. */
-  @font-face {
-    font-family:"Andika"; src:url("./fonts/Andika-Regular.woff2") format("woff2");
-    font-weight:400; font-display:swap;
-  }
-  @font-face {
-    font-family:"Andika"; src:url("./fonts/Andika-Bold.woff2") format("woff2");
-    font-weight:700; font-display:swap;
-  }
-  body {
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:1.4rem; padding:max(1.5rem, env(safe-area-inset-top)) 1.5rem; text-align:center;
-  }
-  h1 { font-size:clamp(2.5rem, 12vw, 5rem); margin:0; letter-spacing:.02em; font-weight:700; }
-  p  { margin:0; font-size:clamp(1rem, 4vw, 1.3rem); color:var(--zacht); max-width:30ch; line-height:1.5; }
-  #proef { font-size:clamp(2.2rem, 10vw, 4rem); font-weight:700; letter-spacing:.08em; }
-  #status { display:flex; flex-direction:column; gap:.6rem; font-size:clamp(.95rem, 3.6vw, 1.1rem); }
-  .regel { display:flex; align-items:center; gap:.6rem; justify-content:center; }
-  .stip { width:.9rem; height:.9rem; border-radius:50%; background:var(--zacht); flex:none; }
-  .ja  .stip { background:var(--goed);   } .ja  { color:var(--goed);   }
-  .nee .stip { background:var(--let-op); } .nee { color:var(--let-op); }
+  @font-face{font-family:"Andika";src:url("./fonts/Andika-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Andika";src:url("./fonts/Andika-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
 
-  /* De ouderpoort: rechtsboven, onzichtbaar, drie seconden ingedrukt houden.
-     Geen knop, geen tekst, geen icoontje — niets dat Ida uitnodigt om te tikken.
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:clamp(1rem,3.5vh,2rem);padding:1rem;text-align:center;overflow:hidden}
 
-     LET OP — env(safe-area-inset-top) is hier geen franje. Als app draait de pagina
-     tót onder de statusbalk van Android. Zat de poort tegen de rand, dan landde de
-     vinger op die statusbalk en trok het meldingenpaneel omlaag; de poort kreeg de
-     aanraking nooit. In de browser viel dat niet op, want daar zit de adresbalk
-     ertussen. Dit is precies waarom een app-test op het echte toestel moet. */
-  #ouderpoort {
-    position:fixed; z-index:10;
+  .scherm{display:none;flex-direction:column;align-items:center;justify-content:center;
+    gap:clamp(1rem,3.5vh,2rem);width:100%}
+  .scherm.aan{display:flex}
+
+  /* Startscherm: één ding om op te tikken. Geen menu, geen tekst — ze kan nog niet lezen. */
+  #start-knop{
+    width:clamp(140px,34vw,240px);height:clamp(140px,34vw,240px);border-radius:50%;
+    border:none;background:var(--vriend);box-shadow:0 7px 0 var(--vriend-diep);
+    display:grid;place-items:center;cursor:pointer;
+  }
+  #start-knop svg{width:42%;height:42%;fill:#FFF9F2}
+  #start-knop:active{transform:translateY(5px);box-shadow:0 2px 0 var(--vriend-diep)}
+
+  #luister{width:clamp(84px,15vw,110px);height:clamp(84px,15vw,110px)}
+  #keuzes{display:flex;gap:clamp(1rem,4vw,2.5rem);flex-wrap:wrap;justify-content:center}
+
+  /* Klankmuur: vrij spel, geen goed of fout. */
+  #muur{display:grid;gap:clamp(.6rem,2.5vw,1.2rem);
+    grid-template-columns:repeat(auto-fit,minmax(clamp(88px,20vw,150px),1fr));
+    width:min(100%,44rem)}
+  #muur .kaart-letter{width:100%;height:clamp(88px,20vw,150px);font-size:clamp(3rem,10vw,5rem)}
+
+  .knop-verder{
+    border:none;background:none;padding:.6rem;cursor:pointer;
+    width:var(--raak-min);height:var(--raak-min);display:grid;place-items:center;
+  }
+  .knop-verder svg{width:100%;height:100%;fill:var(--vriend)}
+
+  /* De ouderpoort. env(safe-area-inset-top) is geen franje: als app loopt de pagina tot
+     onder de statusbalk van Android, en dan landt de vinger daarop in plaats van hier. */
+  #ouderpoort{
+    position:fixed;z-index:10;
     top:calc(env(safe-area-inset-top, 0px) + 12px);
     right:calc(env(safe-area-inset-right, 0px) + 8px);
-    width:96px; height:96px;
-    background:none; border:none; padding:0; cursor:default;
-    touch-action:none; -webkit-user-select:none; user-select:none;
+    width:96px;height:96px;background:none;border:none;padding:0;cursor:default;
+    touch-action:none;-webkit-user-select:none;user-select:none;
   }
-  #ouderpoort::after {
-    content:""; position:absolute; inset:auto 12px 12px auto;
-    width:8px; height:8px; border-radius:50%;
-    background:var(--vriend); opacity:0; transition:opacity .2s ease, transform .2s ease;
+  #ouderpoort::after{
+    content:"";position:absolute;inset:auto 12px 12px auto;width:8px;height:8px;
+    border-radius:50%;background:var(--vriend);opacity:0;
+    transition:opacity .2s ease,transform .2s ease;
   }
-  #ouderpoort.gaat::after { opacity:.9; transform:scale(2.4); transition:transform 3s linear, opacity .2s ease; }
-  #ouderpoort:focus-visible { outline:2px solid var(--vriend); outline-offset:-4px; }
+  #ouderpoort.gaat::after{opacity:.9;transform:scale(2.4);transition:transform 3s linear,opacity .2s ease}
+  #ouderpoort:focus-visible{outline:2px solid var(--vriend);outline-offset:-4px}
+
+  @media (prefers-reduced-motion: reduce){
+    #ouderpoort.gaat::after{transition:opacity .2s ease}
+  }
 </style>
 </head>
 <body>
 
 <button id="ouderpoort" aria-label="Ouderscherm — houd drie seconden ingedrukt"></button>
 
-<h1>Klankspel</h1>
-<p>Nog leeg. Dit scherm toont alleen dat de app op de tablet werkt.</p>
+<!-- 1. beginnen -->
+<div class="scherm aan" id="s-start">
+  <svg viewBox="0 0 120 110" class="vriendje" aria-hidden="true">
+    <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
+    <circle cx="60" cy="58" r="42" fill="#E8956B"/>
+    <circle cx="24" cy="34" r="10" fill="#E8956B"/><circle cx="96" cy="34" r="10" fill="#E8956B"/>
+    <circle cx="46" cy="52" r="7" fill="#3B2C22"/><circle cx="74" cy="52" r="7" fill="#3B2C22"/>
+    <path class="mond" d="M48 74 Q60 80 72 74" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </svg>
+  <button id="start-knop" aria-label="Beginnen">
+    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+</div>
 
-<!-- Proefregel: zo ziet Ida de letters straks. De a en de g hebben één lus. -->
-<div id="proef" aria-hidden="true">a g m s ij ë</div>
+<!-- 2. welke hoor je? -->
+<div class="scherm" id="s-spel">
+  <button id="luister" class="knop-rond" aria-label="Hoor de klank opnieuw">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg>
+  </button>
+  <div id="keuzes"></div>
+  <svg viewBox="0 0 120 110" class="vriendje" id="maatje" aria-hidden="true">
+    <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
+    <circle cx="60" cy="58" r="42" fill="#E8956B"/>
+    <circle cx="24" cy="34" r="10" fill="#E8956B"/><circle cx="96" cy="34" r="10" fill="#E8956B"/>
+    <circle cx="46" cy="52" r="7" fill="#3B2C22"/><circle cx="74" cy="52" r="7" fill="#3B2C22"/>
+    <path class="mond" id="mond" d="M48 74 Q60 80 72 74" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </svg>
+</div>
 
-<svg viewBox="0 0 120 110" class="vriendje" aria-hidden="true">
-  <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
-  <circle cx="60" cy="58" r="42" fill="#E8956B"/>
-  <circle cx="24" cy="34" r="10" fill="#E8956B"/>
-  <circle cx="96" cy="34" r="10" fill="#E8956B"/>
-  <circle cx="46" cy="52" r="7" fill="#3B2C22"/>
-  <circle cx="74" cy="52" r="7" fill="#3B2C22"/>
-  <path class="mond" d="M48 74 Q60 80 72 74" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
-</svg>
+<!-- 3. klankmuur: vrij spel, niets kan fout -->
+<div class="scherm" id="s-muur">
+  <div id="muur"></div>
+  <button class="knop-verder" id="verder" aria-label="Verder spelen">
+    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+</div>
 
-<div id="status">
-  <div class="regel" id="r-sw"><span class="stip"></span><span>offline-geheugen: aan het opzetten…</span></div>
-  <div class="regel" id="r-net"><span class="stip"></span><span>verbinding: nakijken…</span></div>
-  <div class="regel" id="r-app"><span class="stip"></span><span>geopend als: nakijken…</span></div>
-  <div class="regel" id="r-stem"><span class="stip"></span><span>stem van papa: nakijken…</span></div>
+<!-- 4. klaar voor vandaag -->
+<div class="scherm" id="s-einde">
+  <svg viewBox="0 0 120 110" class="vriendje blij" aria-hidden="true">
+    <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
+    <circle cx="60" cy="58" r="42" fill="#E8956B"/>
+    <circle cx="24" cy="34" r="10" fill="#E8956B"/><circle cx="96" cy="34" r="10" fill="#E8956B"/>
+    <circle cx="46" cy="52" r="7" fill="#3B2C22"/><circle cx="74" cy="52" r="7" fill="#3B2C22"/>
+    <path class="mond" d="M44 70 Q60 88 76 70" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </svg>
 </div>
 
 <script type="module">
-  import { Zeg } from './js/zeg.js';
+import { Zeg } from './js/zeg.js';
+import { Log } from './js/log.js';
 
-  function zet(id, ok, tekst) {
-    const el = document.getElementById(id);
-    el.className = 'regel ' + (ok ? 'ja' : 'nee');
-    el.lastElementChild.textContent = tekst;
+/* Stand 1. Twee keuzes, enorme knoppen, geen menu, geen score, geen tijdsdruk.
+   De slimme letterkeuze (wat kent ze al, wat moet vaker terugkomen) is bewust nog
+   niet hier: eerst zien of dit spel haar boeit. */
+
+const SESSIE_MS = 8 * 60 * 1000;   // stopt hierna, maar altijd NA een juist antwoord
+const FRUSTRATIE = 3;              // fouten na elkaar -> klankmuur, nooit een muur
+
+let letters = [], doel = null, bezig = false, vorigDoel = null;
+let foutOpRij = 0, sessieStart = 0, wilStoppen = false;
+
+const $ = id => document.getElementById(id);
+const scherm = naam => document.querySelectorAll('.scherm')
+  .forEach(s => s.classList.toggle('aan', s.id === 's-' + naam));
+
+function gezicht(stand) {
+  const m = $('maatje'), mond = $('mond');
+  m.classList.remove('blij', 'kijkt');
+  if (stand === 'blij') { mond.setAttribute('d', 'M44 70 Q60 88 76 70'); m.classList.add('blij'); }
+  else if (stand === 'kijkt') { mond.setAttribute('d', 'M54 72 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0'); m.classList.add('kijkt'); }
+  else mond.setAttribute('d', 'M48 74 Q60 80 72 74');
+}
+
+const prijs = () => ['j1','j2','j3','j4','j5','j6','j7'][Math.floor(Math.random()*7)];
+const troost = () => ['n1','n2','n3','n4'][Math.floor(Math.random()*4)];
+
+function ronde() {
+  bezig = false;
+  gezicht('rustig');
+  scherm('spel');
+
+  // niet twee keer na elkaar dezelfde vraag
+  let kandidaten = letters.filter(l => l.id !== vorigDoel);
+  doel = kandidaten[Math.floor(Math.random() * kandidaten.length)];
+  vorigDoel = doel.id;
+  const afleider = letters.filter(l => l.id !== doel.id)[Math.floor(Math.random() * (letters.length - 1))];
+
+  const veld = $('keuzes');
+  veld.innerHTML = '';
+  [doel, afleider].sort(() => Math.random() - .5).forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'kaart-letter';
+    b.textContent = l.id;
+    b.setAttribute('aria-label', 'letter ' + l.id);
+    b.onclick = () => antwoord(b, l);
+    veld.appendChild(b);
+  });
+  setTimeout(() => Zeg.zeg(doel.id, doel.klank), 400);
+}
+
+async function antwoord(knop, letter) {
+  if (bezig) return;
+
+  if (letter.id === doel.id) {
+    bezig = true;
+    foutOpRij = 0;
+    knop.classList.add('juist');
+    gezicht('blij');
+    Log.boek('juist', { letter: doel.id });
+    await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+
+    // De sessie eindigt ALTIJD op een juist antwoord, nooit midden in een fout.
+    if (wilStoppen || Date.now() - sessieStart > SESSIE_MS) return einde();
+    setTimeout(ronde, 300);
+    return;
   }
 
-  // 1. Service worker — dit is wat offline werken mogelijk maakt.
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => navigator.serviceWorker.ready)
-      .then(() => zet('r-sw', true, 'offline-geheugen: aan'))
-      .catch(() => zet('r-sw', false, 'offline-geheugen: mislukt'));
-  } else {
-    zet('r-sw', false, 'offline-geheugen: niet ondersteund');
+  // Fout: geen rood, geen straf. De klank nog eens, de juiste licht op.
+  foutOpRij++;
+  Log.boek('fout', { letter: doel.id, gekozen: letter.id });
+  knop.classList.add('mis');
+  gezicht('kijkt');
+  await Zeg.zeg(doel.id, doel.klank, { wacht: true });
+  [...document.querySelectorAll('.kaart-letter')]
+    .find(b => b.textContent === doel.id)?.classList.add('wijs');
+
+  if (foutOpRij >= FRUSTRATIE) {
+    foutOpRij = 0;
+    await Zeg.zeg(troost(), 'goed geprobeerd', { wacht: true });
+    klankmuur();
   }
+}
 
-  // 2. Verbinding — zet wifi uit en herlaad: dit hoort dan "uit" te zeggen en de pagina moet blijven werken.
-  function net() { zet('r-net', navigator.onLine, 'verbinding: ' + (navigator.onLine ? 'aan' : 'uit — en dit scherm laadt nog')); }
-  net();
-  addEventListener('online', net);
-  addEventListener('offline', net);
+/* De klankmuur is de uitweg, niet een straf: hier kan niets fout gaan.
+   Ze tikt een letter, ze hoort hem. Verder gaan mag wanneer ze wil. */
+function klankmuur() {
+  Log.boek('muur');
+  scherm('muur');
+  const m = $('muur');
+  m.innerHTML = '';
+  letters.forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'kaart-letter';
+    b.textContent = l.id;
+    b.setAttribute('aria-label', 'letter ' + l.id);
+    b.onclick = () => Zeg.zeg(l.id, l.klank);
+    m.appendChild(b);
+  });
+}
 
-  // 3. Als app of in de browser geopend?
-  const alsApp = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-  zet('r-app', alsApp, 'geopend als: ' + (alsApp ? 'app (geen browserbalk)' : 'browser — nog niet toegevoegd aan startscherm'));
+async function einde() {
+  Log.boek('einde');
+  scherm('einde');
+  await Zeg.zeg('s3', 'jij hebt goed gewerkt vandaag', { wacht: true });
+  await Zeg.zeg('s2', 'we stoppen hier, tot morgen');
+}
 
-  /* 4. Staan de opnames hier? Dit is geen extraatje: de app in de browser en de app op
-        het startscherm kunnen elk hun eigen opslag hebben. Zonder deze regel moet je
-        raden of jouw 40 minuten inspreken meegekomen zijn naar de app. */
-  Zeg.laad().then(n => {
-    zet('r-stem', n > 0,
-      n > 0 ? `stem van papa: ${n} opnames gevonden`
-            : 'stem van papa: nog geen opnames hier — Ida hoort de computerstem');
-  }).catch(() => zet('r-stem', false, 'stem van papa: kon de opslag niet lezen'));
+async function beginSessie() {
+  sessieStart = Date.now();
+  wilStoppen = false;
+  foutOpRij = 0;
+  Log.boek('start');
+  await Zeg.zeg('s1', 'dag, zullen we luisteren?', { wacht: true });
+  ronde();
+}
 
-  // 5. Ouderpoort: drie seconden ingedrukt houden. Loslaten annuleert.
-  const poort = document.getElementById('ouderpoort');
-  let klok = null;
-  function begin(e) {
-    e.preventDefault();
-    // Teller EERST. setPointerCapture kan gooien (andere browser, ander toestel), en
-    // stond die aanroep ervoor, dan sneuvelde de hele poort stil bij één fout.
-    poort.classList.add('gaat');
-    klok = setTimeout(() => { location.href = './ouder.html'; }, 3000);
-    try { poort.setPointerCapture?.(e.pointerId); } catch { /* mag mislukken */ }
-  }
-  function stop() {
-    clearTimeout(klok); klok = null;
-    poort.classList.remove('gaat');
-  }
-  poort.addEventListener('pointerdown', begin);
-  poort.addEventListener('pointerup', stop);
-  poort.addEventListener('pointercancel', stop);
-  poort.addEventListener('pointerleave', stop);
-  poort.addEventListener('dragstart', e => e.preventDefault());
+/* ---- opstarten ---- */
+(async function () {
+  const klanken = await fetch('./data/klanken.json').then(r => r.json());
+  // stand 1: de eerste zes uit de opbouw — rekbaar en makkelijk te horen,
+  // en bewust geen paren die op elkaar lijken (m/n, b/d) naast elkaar
+  letters = klanken.klanken
+    .filter(k => k.start)
+    .sort((a, b) => a.start - b.start)
+    .slice(0, 6)
+    .map(k => ({ id: k.id, klank: k.zeg }));
+
+  await Zeg.laad();
+  $('start-knop').onclick = beginSessie;
+  $('luister').onclick = () => doel && Zeg.zeg(doel.id, doel.klank);
+  $('verder').onclick = ronde;
+
+  // Weggaan halverwege telt ook als informatie: waar haakte ze af?
+  addEventListener('pagehide', () => { if (sessieStart) Log.boek('stop'); });
+})();
+
+/* ---- ouderpoort: drie seconden ingedrukt ---- */
+const poort = $('ouderpoort');
+let klok = null;
+poort.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  // teller EERST: setPointerCapture kan gooien en doodde eerder stil de hele poort
+  poort.classList.add('gaat');
+  klok = setTimeout(() => { location.href = './ouder.html'; }, 3000);
+  try { poort.setPointerCapture?.(e.pointerId); } catch {}
+});
+['pointerup', 'pointercancel', 'pointerleave'].forEach(n =>
+  poort.addEventListener(n, () => { clearTimeout(klok); poort.classList.remove('gaat'); }));
+poort.addEventListener('dragstart', e => e.preventDefault());
 </script>
 
 </body>
