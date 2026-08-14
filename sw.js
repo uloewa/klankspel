@@ -1,6 +1,6 @@
 // Service worker — houdt de app op het toestel zodat ze ook zonder wifi opent.
 // Verhoog CACHE bij elke wijziging, anders blijft de oude versie hangen.
-const CACHE = 'klankspel-v3';
+const CACHE = 'klankspel-v4';
 
 const SCHIL = [
   './',
@@ -8,7 +8,9 @@ const SCHIL = [
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
-  './icon-maskable-512.png'
+  './icon-maskable-512.png',
+  './fonts/Andika-Regular.woff2',
+  './fonts/Andika-Bold.woff2'
 ];
 
 self.addEventListener('install', (e) => {

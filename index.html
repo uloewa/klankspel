@@ -10,18 +10,35 @@
 <link rel="icon" href="./icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <style>
-  :root { --papier:#F6EBD9; --inkt:#2E2A26; --zacht:#8A7F72; --groen:#3F7D5C; --oker:#C9822F; }
+  /* Andika (SIL, OFL) — gemaakt voor beginnende lezers: enkele-lus a en g, de vorm die
+     kleuters schrijven. Meegeleverd, nooit van een CDN: de app moet offline werken. */
+  @font-face {
+    font-family:"Andika"; src:url("./fonts/Andika-Regular.woff2") format("woff2");
+    font-weight:400; font-display:swap;
+  }
+  @font-face {
+    font-family:"Andika"; src:url("./fonts/Andika-Bold.woff2") format("woff2");
+    font-weight:700; font-display:swap;
+  }
+  :root {
+    --papier:#F6EBD9; --inkt:#2E2A26; --zacht:#8A7F72; --groen:#3F7D5C; --oker:#C9822F;
+    --letter:"Andika","Century Gothic",system-ui,sans-serif;
+  }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { height:100%; margin:0; }
   body {
     background:var(--papier); color:var(--inkt);
-    font-family:"Futura","Century Gothic","Avenir Next",system-ui,sans-serif;
+    font-family:var(--letter);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:1.5rem; padding:max(1.5rem, env(safe-area-inset-top)) 1.5rem;
     text-align:center; overscroll-behavior:none; user-select:none;
   }
   h1 { font-size:clamp(2.5rem, 12vw, 5rem); margin:0; letter-spacing:.02em; font-weight:600; }
   p  { margin:0; font-size:clamp(1rem, 4vw, 1.35rem); color:var(--zacht); max-width:28ch; line-height:1.5; }
+  #proef {
+    font-size:clamp(2.2rem, 10vw, 4rem); font-weight:700; letter-spacing:.08em;
+    color:var(--inkt); margin:-.5rem 0 .5rem;
+  }
   #status {
     display:flex; flex-direction:column; gap:.6rem;
     font-size:clamp(.95rem, 3.6vw, 1.15rem); margin-top:.5rem;
@@ -38,6 +55,9 @@
 
 <h1>Klankspel</h1>
 <p>Nog leeg. Dit scherm bestaat alleen om te tonen dat de app op de tablet werkt.</p>
+
+<!-- Proefregel: zo ziet Ida de letters straks. De a en de g moeten één lus hebben. -->
+<div id="proef" aria-hidden="true">a g m s ij ë</div>
 
 <div id="status">
   <div class="regel" id="r-sw"><span class="stip"></span><span>offline-geheugen: aan het opzetten…</span></div>
