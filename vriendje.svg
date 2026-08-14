@@ -1,0 +1,15 @@
+<!-- Het vriendje van Klankspel. Gekozen 14/08/2026.
+     Wordt in de app inline geplaatst zodat de mond en de houding kunnen wijzigen:
+     - rustig : d="M48 74 Q60 80 72 74"
+     - blij   : d="M44 70 Q60 88 76 70"   + klasse .blij
+     - kijkt  : d="M54 72 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0"  + klasse .kijkt
+     Nooit een neerwaartse mond: er valt in deze app niets te verliezen. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 110" class="vriendje" aria-hidden="true">
+  <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
+  <circle cx="60" cy="58" r="42" fill="#E8956B"/>
+  <circle cx="24" cy="34" r="10" fill="#E8956B"/>
+  <circle cx="96" cy="34" r="10" fill="#E8956B"/>
+  <circle cx="46" cy="52" r="7" fill="#3B2C22"/>
+  <circle cx="74" cy="52" r="7" fill="#3B2C22"/>
+  <path class="mond" d="M48 74 Q60 80 72 74" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,111 @@
+/* ============================================================
+   Klankspel — het vastgelegde palet en de vormentaal.
+   Gekozen door Thijs op 14/08/2026 uit drie gebouwde varianten:
+   "met een vriendje". Alles wat de app tekent, gebruikt dit bestand.
+
+   Twee regels die hier niet onderhandelbaar zijn, en waarom:
+
+   1. GEEN ROOD BIJ EEN FOUT. Rood is straf, en in deze app valt niets te
+      verliezen. Er is bewust geen --fout kleur: die zou vroeg of laat
+      gebruikt worden. Fout = afzwakken, de klank opnieuw, verder.
+   2. GEEN ROOD EN GEEN GROEN NAAST ELKAAR als versiering. Een kind leest
+      rood-naast-groen als fout-naast-goed, ook als je er niets mee bedoelt.
+      --goed is uitsluitend voor "dit was juist", nooit decoratief.
+   ============================================================ */
+
+:root {
+  /* Vlakken */
+  --papier:        #F6EBD9;  /* achtergrond */
+  --kaart:         #FFFDF8;  /* letterkaart */
+  --kaart-diep:    #E0D2BB;  /* de "dikte" onder een kaart */
+
+  /* Inkt */
+  --inkt:          #2E2A26;  /* letters en koppen */
+  --zacht:         #8A7F72;  /* bijtekst, alleen voor volwassenen */
+
+  /* Het vriendje — draagt het gevoel, want er valt niets te lezen */
+  --vriend:        #E8956B;
+  --vriend-diep:   #C9764F;
+  --vriend-oog:    #3B2C22;
+
+  /* Betekenis. Spaarzaam en alleen hiervoor. */
+  --goed:          #3F7D5C;  /* uitsluitend: dit was juist */
+  --let-op:        #C9822F;  /* informatief, nooit verwijtend */
+
+  /* Vorm */
+  --rond-kaart:    30px;
+  --rond-knop:     50%;
+  --dikte:         5px;      /* de schaduwrand die diepte geeft */
+
+  /* Raakvlakken: nooit kleiner dan dit. Vingers van vier jaar. */
+  --raak-min:      96px;
+
+  --letter: "Andika", "Century Gothic", system-ui, sans-serif;
+}
+
+/* ---------- basis ---------- */
+
+*, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; margin: 0; overscroll-behavior: none; }
+
+body {
+  background: var(--papier);
+  color: var(--inkt);
+  font-family: var(--letter);
+  user-select: none;
+}
+
+/* ---------- letterkaart ---------- */
+
+.kaart-letter {
+  width: clamp(130px, 28vw, 270px);
+  height: clamp(130px, 28vw, 270px);
+  min-width: var(--raak-min); min-height: var(--raak-min);
+  border: none; border-radius: var(--rond-kaart);
+  background: var(--kaart);
+  box-shadow: 0 var(--dikte) 0 var(--kaart-diep);
+  font-family: inherit; font-weight: 700;
+  font-size: clamp(4.4rem, 14vw, 9.5rem);
+  color: var(--inkt);
+  display: grid; place-items: center; cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+}
+.kaart-letter:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--kaart-diep); }
+
+/* juist: de kaart komt op en krijgt een groene voet */
+.kaart-letter.juist { box-shadow: 0 var(--dikte) 0 var(--goed); transform: translateY(-6px); }
+
+/* fout: afzwakken. Geen rood, geen schudden, geen geluid van afkeuring. */
+.kaart-letter.mis { opacity: .5; }
+
+/* daarna wijst de app rustig de juiste aan */
+.kaart-letter.wijs { box-shadow: 0 var(--dikte) 0 var(--goed); animation: wieg .9s ease 2; }
+@keyframes wieg { 50% { transform: translateY(-8px); } }
+
+/* ---------- ronde knop (luisteren) ---------- */
+
+.knop-rond {
+  width: clamp(var(--raak-min), 17vw, 116px);
+  height: clamp(var(--raak-min), 17vw, 116px);
+  border: none; border-radius: var(--rond-knop);
+  background: var(--vriend);
+  box-shadow: 0 4px 0 var(--vriend-diep);
+  display: grid; place-items: center; cursor: pointer;
+}
+.knop-rond svg { width: 46%; height: 46%; fill: #FFF9F2; }
+.knop-rond:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--vriend-diep); }
+
+/* ---------- het vriendje ---------- */
+
+.vriendje { width: clamp(110px, 22vw, 150px); height: auto; transition: transform .25s ease; }
+.vriendje .mond { transition: d .2s ease; }
+.vriendje.blij { animation: hup .5s ease 2; }
+@keyframes hup { 50% { transform: translateY(-22px) scale(1.04); } }
+/* "kijkt" = nieuwsgierig meekijken bij een fout — nooit teleurgesteld */
+.vriendje.kijkt { transform: rotate(-7deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .kaart-letter, .vriendje { transition: none; }
+  .kaart-letter.wijs, .vriendje.blij { animation: none; }
+}
