@@ -143,6 +143,15 @@ export const Motor = {
     return { doel, opties: this.opties(doel, st.keuzes), herhaling: false };
   },
 
+  /* Een vraag die ergens anders is samengesteld (zoals een woordronde) toch bij de motor
+     aanmelden. Zonder dit weet hij niet dat die letter net aan bod kwam: hij kan hem
+     meteen daarna nog eens stellen, en zijn "wat heb ik lang niet gezien"-weging klopt niet. */
+  markeer(doel) {
+    st.beurt++;
+    st.vorigDoel = doel;
+    if (st.letters[doel]) st.letters[doel].laatst = st.beurt;
+  },
+
   /* De afleiders. Staat 'verwarrend' uit, dan juist letters die er zo min mogelijk op
      lijken — anders raadt ze op vorm in plaats van op klank. */
   opties(doel, hoeveel) {

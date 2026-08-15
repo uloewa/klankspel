@@ -62,7 +62,11 @@ body {
   width: clamp(130px, 28vw, 270px);
   height: clamp(130px, 28vw, 270px);
   min-width: var(--raak-min); min-height: var(--raak-min);
-  border: none; border-radius: var(--rond-kaart);
+  /* De rand is geen versiering. Papier en kaart schelen maar weinig van kleur, en zonder
+     omtrek leest de kaart niet als iets waarop je tikt — op een schermafbeelding zag ik
+     zelf de knop niet staan. Voor een kind van vier moet het raakvlak zichtbaar zijn. */
+  border: 2px solid var(--kaart-diep);
+  border-radius: var(--rond-kaart);
   background: var(--kaart);
   box-shadow: 0 var(--dikte) 0 var(--kaart-diep);
   font-family: inherit; font-weight: 700;

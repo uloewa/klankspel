@@ -15,11 +15,27 @@
   @font-face{font-family:"Andika";src:url("./fonts/Andika-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
 
   body{display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:clamp(1rem,3.5vh,2rem);padding:1rem;text-align:center;overflow:hidden}
+    gap:clamp(1rem,3.5vh,2rem);text-align:center;overflow:hidden;
+    /* Als app loopt de pagina tot onder de statusbalk; zonder deze marge staat de
+       inhoud daar deels achter. */
+    padding:
+      calc(env(safe-area-inset-top, 0px) + .8rem)
+      calc(env(safe-area-inset-right, 0px) + .8rem)
+      calc(env(safe-area-inset-bottom, 0px) + .8rem)
+      calc(env(safe-area-inset-left, 0px) + .8rem);
+  }
 
   .scherm{display:none;flex-direction:column;align-items:center;justify-content:center;
-    gap:clamp(1rem,3.5vh,2rem);width:100%}
+    gap:clamp(.8rem,3vh,1.8rem);width:100%}
   .scherm.aan{display:flex}
+
+  /* Het vriendje krijgt een vaste hoogte. Zonder dat verspringt het hele scherm zodra
+     het aantal kaarten wijzigt — en dan verplaatst de knop zich onder haar vinger. */
+  #s-spel .vriendje{height:clamp(70px,13vh,120px);width:auto;flex:none}
+  /* Het eindscherm is het laatste wat ze ziet: daar mag het vriendje groot zijn.
+     Klein in het midden van een leeg scherm voelt als een foutmelding, niet als een feestje. */
+  #s-einde .vriendje{height:min(46vh,44vw,340px);width:auto}
+  #s-start .vriendje{height:min(30vh,32vw,220px);width:auto}
 
   /* Startscherm: één ding om op te tikken. Geen menu, geen tekst — ze kan nog niet lezen. */
   #start-knop{
@@ -30,14 +46,49 @@
   #start-knop svg{width:42%;height:42%;fill:#FFF9F2}
   #start-knop:active{transform:translateY(5px);box-shadow:0 2px 0 var(--vriend-diep)}
 
-  #luister{width:clamp(84px,15vw,110px);height:clamp(84px,15vw,110px)}
-  #keuzes{display:flex;gap:clamp(1rem,4vw,2.5rem);flex-wrap:wrap;justify-content:center}
+  #luister{width:clamp(76px,13vh,104px);height:clamp(76px,13vh,104px);flex:none}
 
-  /* Klankmuur: vrij spel, geen goed of fout. */
-  #muur{display:grid;gap:clamp(.6rem,2.5vw,1.2rem);
-    grid-template-columns:repeat(auto-fit,minmax(clamp(88px,20vw,150px),1fr));
-    width:min(100%,44rem)}
-  #muur .kaart-letter{width:100%;height:clamp(88px,20vw,150px);font-size:clamp(3rem,10vw,5rem)}
+  /* Het plaatje bij een woordronde: ze ziet 🌙, hoort "maan", wijst de m aan. */
+  #plaatje{font-size:clamp(3.5rem,17vh,7rem);line-height:1;display:none}
+  #plaatje.aan{display:block}
+
+  /* Kaarten: een raster dat 2, 3 en 4 altijd evenwichtig legt. Een flex-rij met wrap
+     brak bij vier naar 3+1, en die eenzame kaart onderaan trekt de aandacht — dat
+     beïnvloedt haar keuze. Grootte begrensd op breedte ÉN hoogte, zodat er ook liggend
+     niets buiten beeld valt. */
+  /* flex:none is hier geen detail — zonder dat kneep de kolom het raster samen zodra het
+     plaatje er ruimte bij vroeg, en staken de letters boven hun kaart uit. */
+  #keuzes{display:grid;gap:clamp(.7rem,2.6vw,1.8rem);justify-content:center;align-content:center;flex:none}
+  #keuzes .kaart-letter{
+    width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55);flex:none;
+  }
+  #keuzes[data-n="2"]{grid-template-columns:repeat(2,auto); --kaartmaat:min(38vw,36vh,260px)}
+  #keuzes[data-n="3"]{grid-template-columns:repeat(3,auto); --kaartmaat:min(27vw,32vh,220px)}
+  #keuzes[data-n="4"]{grid-template-columns:repeat(2,auto); --kaartmaat:min(38vw,23vh,200px)}
+  @media (orientation:landscape){
+    #keuzes[data-n="3"]{--kaartmaat:min(24vw,36vh,220px)}
+    #keuzes[data-n="4"]{grid-template-columns:repeat(4,auto); --kaartmaat:min(20vw,36vh,200px)}
+  }
+
+  /* Staat er een plaatje bij, dan is er minder hoogte over voor de kaarten. */
+  #keuzes.met-plaatje[data-n="2"]{--kaartmaat:min(38vw,25vh,210px)}
+  #keuzes.met-plaatje[data-n="3"]{--kaartmaat:min(27vw,22vh,180px)}
+  #keuzes.met-plaatje[data-n="4"]{--kaartmaat:min(38vw,17vh,160px)}
+  @media (orientation:landscape){
+    #keuzes.met-plaatje[data-n="3"]{--kaartmaat:min(24vw,26vh,180px)}
+    #keuzes.met-plaatje[data-n="4"]{--kaartmaat:min(20vw,26vh,170px)}
+  }
+
+  /* De fout gekozen kaart stapt terug: kleiner en zonder diepte. Duidelijker dan alleen
+     vervagen, en nog steeds zonder één spoor rood — er valt niets te verliezen. */
+  #keuzes .kaart-letter.mis{opacity:.55;transform:scale(.9);box-shadow:none}
+
+  /* Klankmuur: vrij spel, geen goed of fout. Vast raster i.p.v. auto-fit, zodat de
+     vorm niet verspringt met het aantal letters. */
+  #muur{display:grid;gap:clamp(.5rem,2vw,1rem);grid-template-columns:repeat(3,1fr);
+    width:min(100%,40rem)}
+  #muur .kaart-letter{width:100%;height:min(26vw,20vh,150px);font-size:min(13vw,10vh,4.5rem)}
+  @media (orientation:landscape){ #muur{grid-template-columns:repeat(6,1fr)} }
 
   .knop-verder{
     border:none;background:none;padding:.6rem;cursor:pointer;
@@ -96,6 +147,7 @@
 
 <!-- 2. welke hoor je? -->
 <div class="scherm" id="s-spel">
+  <div id="plaatje" aria-hidden="true"></div>
   <button id="luister" class="knop-rond" aria-label="Hoor de klank opnieuw">
     <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg>
   </button>
@@ -137,8 +189,9 @@ import { Motor } from './js/motor.js';
    hoeveel keuzes erbij horen. Alles wat een drempel is, staat in data/motor.json. */
 
 let klankVan = {};                 // id -> wat de computerstem zegt als er geen opname is
+let woorden = [];                  // {woord, emoji, begint_met}
 let huidige = null, bezig = false;
-let sessieStart = 0, vraagTijd = 0, gastModus = null;
+let sessieStart = 0, vraagTijd = 0, gastModus = null, rondeNr = 0;
 
 const $ = id => document.getElementById(id);
 const scherm = naam => document.querySelectorAll('.scherm')
@@ -155,14 +208,48 @@ function gezicht(stand) {
 const prijs = () => ['j1','j2','j3','j4','j5','j6','j7'][Math.floor(Math.random()*7)];
 const troost = () => ['n1','n2','n3','n4'][Math.floor(Math.random()*4)];
 
+/* Om de zoveel beurten een WOORD in plaats van een losse klank: ze ziet het plaatje,
+   hoort papa het woord zeggen, en wijst de beginletter aan. Dat is de brug van losse
+   klanken naar lezen — een letter krijgt pas betekenis als ze hem terugvindt in een
+   woord dat ze kent.
+
+   Alleen woorden waarvan de beginletter NU in omloop is; anders vraag je iets waarop ze
+   het antwoord niet kan weten. */
+function woordVraag() {
+  const cfg = Motor.config().woordrondes;
+  const s = Motor.toestand();
+  if (rondeNr % cfg.elke !== 0) return null;
+
+  const stevig = s.actief.filter(id => s.letters[id].sterkte >= Motor.config().letters.stevig_vanaf).length;
+  if (stevig < cfg.pas_vanaf_stevig) return null;
+
+  const kan = woorden.filter(w => s.actief.includes(w.begint_met));
+  if (!kan.length) return null;
+
+  const w = kan[Math.floor(Math.random() * kan.length)];
+  Motor.markeer(w.begint_met);   // anders mist de motor dat deze letter net aan bod kwam
+  return {
+    doel: w.begint_met,
+    opties: Motor.opties(w.begint_met, s.keuzes),
+    herhaling: false,
+    woord: w
+  };
+}
+
 function ronde(vraag = null) {
   bezig = false;
   gezicht('rustig');
   scherm('spel');
-  huidige = vraag || Motor.volgende();
+  if (!vraag) rondeNr++;
+  huidige = vraag || woordVraag() || Motor.volgende();
+
+  $('plaatje').textContent = huidige.woord ? huidige.woord.emoji : '';
+  $('plaatje').classList.toggle('aan', !!huidige.woord);
 
   const veld = $('keuzes');
   veld.innerHTML = '';
+  veld.dataset.n = huidige.opties.length;
+  veld.classList.toggle('met-plaatje', !!huidige.woord);
   huidige.opties.forEach(id => {
     const b = document.createElement('button');
     b.className = 'kaart-letter';
@@ -172,9 +259,17 @@ function ronde(vraag = null) {
     veld.appendChild(b);
   });
   setTimeout(() => {
-    Zeg.zeg(huidige.doel, klankVan[huidige.doel]);
+    hoorVraag();
     vraagTijd = Date.now();       // vanaf hier meten we hoe snel ze tikt
   }, 400);
+}
+
+// Bij een woordronde hoort ze het woord, anders de losse klank.
+function hoorVraag() {
+  if (!huidige) return;
+  return huidige.woord
+    ? Zeg.zeg('w_' + huidige.woord.woord, huidige.woord.woord)
+    : Zeg.zeg(huidige.doel, klankVan[huidige.doel]);
 }
 
 async function antwoord(knop, gekozen) {
@@ -186,8 +281,11 @@ async function antwoord(knop, gekozen) {
     bezig = true;
     knop.classList.add('juist');
     gezicht('blij');
-    if (!gastModus) Log.boek('juist', { letter: huidige.doel, ms: reactie, telt: r.teltMee });
+    if (!gastModus) Log.boek('juist', { letter: huidige.doel, ms: reactie, telt: r.teltMee, woord: huidige.woord?.woord });
     await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+    /* En dan de klank nog eens. Precies op het moment dat ze trots is, wordt de
+       koppeling letter-klank opnieuw gelegd — de goedkoopste leerwinst die er ligt. */
+    await Zeg.zeg(huidige.doel, klankVan[huidige.doel], { wacht: true });
 
     // De sessie eindigt ALTIJD op een juist antwoord, nooit midden in een fout.
     if (r.magAfronden || Date.now() - sessieStart > Motor.sessieMs()) return einde();
@@ -196,12 +294,17 @@ async function antwoord(knop, gekozen) {
   }
 
   // Fout: geen rood, geen straf. De klank nog eens, de juiste licht op.
-  if (!gastModus) Log.boek('fout', { letter: huidige.doel, gekozen, ms: reactie, telt: r.teltMee });
+  if (!gastModus) Log.boek('fout', { letter: huidige.doel, gekozen, ms: reactie, telt: r.teltMee, woord: huidige.woord?.woord });
   knop.classList.add('mis');
   gezicht('kijkt');
   await Zeg.zeg(huidige.doel, klankVan[huidige.doel], { wacht: true });
-  [...document.querySelectorAll('.kaart-letter')]
-    .find(b => b.textContent === huidige.doel)?.classList.add('wijs');
+  const juisteKaart = [...document.querySelectorAll('#keuzes .kaart-letter')]
+    .find(b => b.textContent === huidige.doel);
+  if (juisteKaart) {
+    juisteKaart.classList.add('wijs');
+    // aantikbaar: ze mag de klank zelf nog eens oproepen in plaats van hem te ondergaan
+    juisteKaart.onclick = () => Zeg.zeg(huidige.doel, klankVan[huidige.doel]);
+  }
 
   if (r.gefrustreerd) {
     await Zeg.zeg(troost(), 'goed geprobeerd', { wacht: true });
@@ -245,7 +348,11 @@ async function beginSessie() {
 
 /* ---- opstarten ---- */
 (async function () {
-  const klanken = await fetch('./data/klanken.json').then(r => r.json());
+  const [klanken, woordData] = await Promise.all([
+    fetch('./data/klanken.json').then(r => r.json()),
+    fetch('./data/woorden.json').then(r => r.json())
+  ]);
+  woorden = woordData.woorden;
   // De leervolgorde: rekbaar en makkelijk te horen eerst, de verwarrende paren laat.
   const letters = klanken.klanken
     .filter(k => k.start)
@@ -263,7 +370,7 @@ async function beginSessie() {
   await Zeg.laad();
 
   $('start-knop').onclick = beginSessie;
-  $('luister').onclick = () => huidige && Zeg.zeg(huidige.doel, klankVan[huidige.doel]);
+  $('luister').onclick = hoorVraag;
   $('verder').onclick = () => ronde();
 
   // Weggaan halverwege telt ook als informatie: waar haakte ze af?

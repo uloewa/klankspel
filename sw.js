@@ -1,6 +1,6 @@
 // Service worker — houdt de app op het toestel zodat ze ook zonder wifi opent.
 // Verhoog CACHE bij elke wijziging, anders blijft de oude versie hangen.
-const CACHE = 'klankspel-v11';
+const CACHE = 'klankspel-v14';
 
 const SCHIL = [
   './',
@@ -38,8 +38,15 @@ self.addEventListener('activate', (e) => {
 
 // Cache-first: wat in het geheugen zit gaat voor. Zo opent de app ook zonder verbinding.
 // Navigaties vallen bij een mislukte fetch terug op index.html.
+/* Op localhost NOOIT uit het geheugen serveren. Tijdens het bouwen kostte dit al drie keer
+   een verkeerde diagnose: je wijzigt een bestand, de service worker geeft de oude terug, en
+   je gaat een fout zoeken die je net hebt opgelost. Op het echte adres verandert er niets —
+   daar is cache-first juist wat de app offline laat werken. */
+const LOKAAL = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+
 self.addEventListener('fetch', (e) => {
   const req = e.request;
+  if (LOKAAL) return;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
 
   e.respondWith(

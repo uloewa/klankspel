@@ -63,6 +63,19 @@
     "_fouten_voor_daling": "een eerste fout op een letter verlaagt de sterkte niet; een 4-jarige tikt ook gewoon mis"
   },
 
+  "woordrondes": {
+    "elke": 4,
+    "_elke": [
+      "Om de zoveel beurten geen losse klank maar een WOORD met een plaatje: ze hoort",
+      "'maan' en wijst de m aan. Dat is de brug van losse klanken naar lezen — een letter",
+      "krijgt pas betekenis als ze hem in een echt woord terugvindt.",
+      "Alleen woorden waarvan de beginletter nu in omloop is; anders vraag je iets",
+      "waarop ze het antwoord niet kán weten."
+    ],
+    "pas_vanaf_stevig": 1,
+    "_pas_vanaf_stevig": "wacht tot minstens zoveel letters zitten; anders komt dit te vroeg"
+  },
+
   "sessie": {
     "duur_minuten": 8,
     "_duur": "stopt hierna, maar ALTIJD na een juist antwoord — nooit midden in een fout"
