@@ -104,6 +104,10 @@
       <button class="knop" data-gast="even_oud">even oud</button>
       <button class="knop" data-gast="ouder">ouder</button>
     </div>
+    <p class="melding" id="gast-melding"></p>
+    <div class="rij-knoppen" id="gast-terug" hidden>
+      <button class="knop" id="gast-uit">terug naar Ida</button>
+    </div>
   </section>
 
   <section class="kaart">
@@ -396,6 +400,24 @@ document.querySelectorAll('[data-gast]').forEach(b => {
   };
 });
 
+/* De gastmodus vervalt vanzelf als de app dichtgaat, maar dat is te laat als je de
+   tablet tussendoor aan Ida teruggeeft. Daarom een uitknop, die enkel verschijnt
+   wanneer de gastmodus echt aanstaat. */
+function toonGastStand() {
+  const aan = sessionStorage.getItem('klankspel-gast');
+  $('gast-terug').hidden = !aan;
+  $('gast-melding').textContent = aan
+    ? 'De gastmodus staat AAN. Ida\'s voortgang wordt nu niet bijgehouden.'
+    : '';
+  $('gast-melding').className = 'melding ' + (aan ? 'let-op' : '');
+}
+$('gast-uit').onclick = () => {
+  sessionStorage.removeItem('klankspel-gast');
+  toonGastStand();
+  $('gast-melding').textContent = 'Terug naar Ida. Haar voortgang telt weer mee.';
+  $('gast-melding').className = 'melding goed';
+};
+
 async function toonLetters() {
   const klanken = await fetch('./data/klanken.json').then(r => r.json());
   const letters = klanken.klanken.filter(k => k.start).sort((a, b) => a.start - b.start)
@@ -435,6 +457,7 @@ async function toonLetters() {
   toonStatus();
   toonLog();
   toonLetters();
+  toonGastStand();
   // Zinnetjes hebben geen letter of plaatje: daar toont het vakje het nummer uit de
   // opnamelijst, zodat het overeenkomt met het blad waar je van leest.
   $('raster').innerHTML = lijst.map((x, n) =>
