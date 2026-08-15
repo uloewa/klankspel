@@ -1,6 +1,6 @@
 // Service worker — houdt de app op het toestel zodat ze ook zonder wifi opent.
 // Verhoog CACHE bij elke wijziging, anders blijft de oude versie hangen.
-const CACHE = 'klankspel-v16';
+const CACHE = 'klankspel-v17';
 
 const SCHIL = [
   './',
@@ -14,6 +14,7 @@ const SCHIL = [
   './js/log.js',
   './js/motor.js',
   './js/figuren.js',
+  './js/familie.js',
   './data/klanken.json',
   './data/woorden.json',
   './data/aanmoedigingen.json',

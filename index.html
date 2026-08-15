@@ -59,6 +59,10 @@
 
   /* Het plaatje bij een woordronde: ze ziet 🌙, hoort "maan", wijst de m aan. */
   #plaatje{font-size:clamp(3.5rem,17vh,7rem);line-height:1;display:none}
+  /* De foto bij een familieronde. Vervaagt naarmate ze de naam kent — anders kijkt ze
+     naar het gezicht en nooit naar het woord. */
+  #foto{width:min(22vh,30vw,190px);height:min(22vh,30vw,190px);border-radius:26px;
+    object-fit:cover;border:3px solid var(--kaart-diep);transition:opacity .4s ease}
   #plaatje.aan{display:block}
 
   /* Kaarten: een raster dat 2, 3 en 4 altijd evenwichtig legt. Een flex-rij met wrap
@@ -86,6 +90,15 @@
   @media (orientation:landscape){
     #keuzes.met-plaatje[data-n="3"]{--kaartmaat:min(24vw,26vh,180px)}
     #keuzes.met-plaatje[data-n="4"]{--kaartmaat:min(20vw,26vh,170px)}
+  }
+
+  /* Namen zijn woorden, geen letters. Deze regel MOET na .kaart-letter staan en twee
+     klassen gebruiken: anders wint de lettergrootte van een losse letter (0,55 × de
+     kaartmaat) en puilt de naam over zijn kaart heen. */
+  #keuzes .kaart-letter.kaart-naam{
+    width:min(40vw,300px);height:min(19vh,24vw,150px);
+    font-size:clamp(1rem,3.2vw,1.9rem);line-height:1.2;padding:0 .6rem;
+    overflow-wrap:anywhere;hyphens:auto;
   }
 
   /* De fout gekozen kaart stapt terug: kleiner en zonder diepte. Duidelijker dan alleen
@@ -148,6 +161,7 @@
 
 <!-- 2. welke hoor je? -->
 <div class="scherm" id="s-spel">
+  <img id="foto" alt="" hidden>
   <div id="plaatje" aria-hidden="true"></div>
   <button id="luister" class="knop-rond" aria-label="Hoor de klank opnieuw">
     <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg>
@@ -174,6 +188,7 @@ import { Zeg }   from './js/zeg.js';
 import { Log }   from './js/log.js';
 import { Motor } from './js/motor.js';
 import { laadFiguren, tekenFiguur, figuur, Gekozen, MONDEN } from './js/figuren.js';
+import { Familie } from './js/familie.js';
 
 /* Stand 1, nu met de meegroei-motor: de motor kiest welke letter aan de beurt is en
    hoeveel keuzes erbij horen. Alles wat een drempel is, staat in data/motor.json. */
@@ -230,37 +245,93 @@ function woordVraag() {
   };
 }
 
+/* "Onze namen": ze ziet het gezicht van iemand van wie ze houdt, hoort die persoon zelf
+   haar naam zeggen, en kiest het juiste woordbeeld. Dit is geen letterspel — het is de
+   fase die daaraan voorafgaat: de vorm van een woord herkennen.
+
+   De foto vervaagt naarmate ze de naam kent. Blijft de foto altijd staan, dan kijkt ze
+   naar het gezicht en nooit naar het woord. */
+function familieVraag() {
+  const cfg = Motor.config().familierondes;
+  if (!cfg || rondeNr % cfg.elke !== 0) return null;
+  const mensen = Familie.speelbaar();
+  if (mensen.length < 2) return null;     // zonder tweede naam valt er niets te kiezen
+
+  const kies = [...mensen].sort(() => Math.random() - .5);
+  const doel = kies[0], afleider = kies[1];
+  return {
+    soort: 'familie',
+    doel: doel.id,
+    persoon: doel,
+    opties: [doel, afleider].sort(() => Math.random() - .5),
+    herhaling: false
+  };
+}
+
+async function toonFamilieVraag() {
+  const p = huidige.persoon;
+  const url = await Familie.fotoUrl(p.id);
+  const sterkte = Familie.fotoSterkte(p);
+  const f = $('foto');
+  if (url && sterkte > 0) {
+    f.src = url; f.style.opacity = sterkte; f.hidden = false;
+  } else {
+    f.hidden = true;                      // ze kent hem: nu leest ze het woord
+  }
+
+  const veld = $('keuzes');
+  veld.innerHTML = '';
+  veld.dataset.n = 2;
+  veld.classList.add('met-plaatje');
+  huidige.opties.forEach(q => {
+    const b = document.createElement('button');
+    b.className = 'kaart-letter kaart-naam';
+    b.textContent = q.naam;
+    b.setAttribute('aria-label', q.naam);
+    b.onclick = () => antwoord(b, q.id);
+    veld.appendChild(b);
+  });
+}
+
 function ronde(vraag = null) {
   bezig = false;
   gezicht('rustig');
   scherm('spel');
   if (!vraag) rondeNr++;
-  huidige = vraag || woordVraag() || Motor.volgende();
+  huidige = vraag || familieVraag() || woordVraag() || Motor.volgende();
 
+  const isFamilie = huidige.soort === 'familie';
+  $('foto').hidden = true;
   $('plaatje').textContent = huidige.woord ? huidige.woord.emoji : '';
   $('plaatje').classList.toggle('aan', !!huidige.woord);
 
-  const veld = $('keuzes');
-  veld.innerHTML = '';
-  veld.dataset.n = huidige.opties.length;
-  veld.classList.toggle('met-plaatje', !!huidige.woord);
-  huidige.opties.forEach(id => {
-    const b = document.createElement('button');
-    b.className = 'kaart-letter';
-    b.textContent = id;
-    b.setAttribute('aria-label', 'letter ' + id);
-    b.onclick = () => antwoord(b, id);
-    veld.appendChild(b);
-  });
+  if (isFamilie) {
+    toonFamilieVraag();
+  } else {
+    const veld = $('keuzes');
+    veld.innerHTML = '';
+    veld.dataset.n = huidige.opties.length;
+    veld.classList.toggle('met-plaatje', !!huidige.woord);
+    huidige.opties.forEach(id => {
+      const b = document.createElement('button');
+      b.className = 'kaart-letter';
+      b.textContent = id;
+      b.setAttribute('aria-label', 'letter ' + id);
+      b.onclick = () => antwoord(b, id);
+      veld.appendChild(b);
+    });
+  }
+
   setTimeout(() => {
     hoorVraag();
     vraagTijd = Date.now();       // vanaf hier meten we hoe snel ze tikt
   }, 400);
 }
 
-// Bij een woordronde hoort ze het woord, anders de losse klank.
+// Familieronde: de stem van die persoon zelf. Woordronde: het woord. Anders: de klank.
 function hoorVraag() {
   if (!huidige) return;
+  if (huidige.soort === 'familie') return Zeg.zeg(Familie.stemId(huidige.doel), huidige.persoon.naam);
   return huidige.woord
     ? Zeg.zeg('w_' + huidige.woord.woord, huidige.woord.woord)
     : Zeg.zeg(huidige.doel, klankVan[huidige.doel]);
@@ -269,6 +340,11 @@ function hoorVraag() {
 async function antwoord(knop, gekozen) {
   if (bezig) return;
   const reactie = vraagTijd ? Date.now() - vraagTijd : null;
+
+  /* Een familieronde gaat NIET door de lettermotor: het is een andere vaardigheid
+     (woordbeeld herkennen), en die zou de letterstatistieken vervuilen. */
+  if (huidige.soort === 'familie') return antwoordFamilie(knop, gekozen);
+
   const r = Motor.antwoord(huidige.doel, gekozen, reactie, huidige.herhaling);
 
   if (r.juist) {
@@ -307,6 +383,36 @@ async function antwoord(knop, gekozen) {
   // Meteen dezelfde vraag, makkelijker gemaakt: een mislukte poging helpt pas als ze
   // er kort daarna wél in slaagt.
   setTimeout(() => ronde(Motor.herhaal(huidige.doel)), 700);
+}
+
+async function antwoordFamilie(knop, gekozen) {
+  const juist = gekozen === huidige.doel;
+  Familie.telJuist(huidige.doel, juist);
+  if (!gastModus) Log.boek(juist ? 'juist' : 'fout', { soort: 'familie', wie: huidige.persoon.naam });
+
+  if (juist) {
+    bezig = true;
+    knop.classList.add('juist');
+    gezicht('blij');
+    await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+    await Zeg.zeg(Familie.stemId(huidige.doel), huidige.persoon.naam, { wacht: true });
+    if (Date.now() - sessieStart > Motor.sessieMs()) return einde();
+    setTimeout(() => ronde(), 300);
+    return;
+  }
+
+  // fout: geen straf. De stem nog eens, en de juiste naam licht op.
+  knop.classList.add('mis');
+  gezicht('kijkt');
+  await Zeg.zeg(Familie.stemId(huidige.doel), huidige.persoon.naam, { wacht: true });
+  const juisteKaart = [...document.querySelectorAll('#keuzes .kaart-letter')]
+    .find(b => b.textContent === huidige.persoon.naam);
+  if (juisteKaart) {
+    juisteKaart.classList.add('wijs');
+    juisteKaart.onclick = () => Zeg.zeg(Familie.stemId(huidige.doel), huidige.persoon.naam);
+  }
+  // en de foto komt terug helpen bij de volgende keer (telJuist heeft hem verlaagd)
+  setTimeout(() => ronde(), 1400);
 }
 
 /* De klankmuur is de uitweg, niet een straf: hier kan niets fout gaan.

@@ -70,6 +70,20 @@
   .uitleg{margin:0;color:var(--zacht);font-size:.92rem}
   details summary{cursor:pointer;color:var(--zacht);font-size:.95rem}
   .stem-uit{font-size:.92rem;color:var(--zacht);margin:0}
+  .fam-stap{display:flex;flex-direction:column;gap:.5rem}
+  #fam-voorbeeld{width:120px;height:120px;border-radius:18px;object-fit:cover;
+    border:2px solid var(--kaart-diep);align-self:flex-start}
+  #fam-naam{font:inherit;font-size:1.15rem;padding:.7rem .9rem;border-radius:12px;
+    border:2px solid var(--kaart-diep);background:var(--kaart);color:var(--inkt);width:100%}
+  #fam-opnemen.bezig{background:#B4453C;color:#FFF9F2;border-color:#B4453C}
+  #fam-opnemen{touch-action:none;user-select:none}
+  #fam-lijst{display:flex;flex-direction:column;gap:.5rem;margin-top:.4rem}
+  .fam-rij{display:flex;align-items:center;gap:.7rem}
+  .fam-rij img{width:52px;height:52px;border-radius:12px;object-fit:cover;flex:none}
+  .fam-rij .naam{font-family:var(--letter);font-weight:700;font-size:1.15rem;flex:1;text-align:left}
+  .fam-rij .staat{font-size:.85rem;color:var(--zacht)}
+  .fam-rij button{border:1px solid var(--kaart-diep);background:var(--kaart);border-radius:10px;
+    font:inherit;padding:.4rem .7rem;cursor:pointer;color:var(--zacht)}
   #letters{display:flex;flex-direction:column;gap:.5rem}
   .letterrij{display:flex;align-items:center;gap:.7rem}
   .letterrij .l{font-family:var(--letter);font-weight:700;font-size:1.6rem;width:2.4rem;text-align:center}
@@ -93,6 +107,37 @@
     <a href="./">‹ terug naar de app</a>
     <h1>Ouderscherm</h1>
   </div>
+
+  <section class="kaart">
+    <h2>Familie toevoegen</h2>
+    <p class="uitleg">Foto, hoe Ida die persoon noemt, en die persoon zelf haar naam laten
+    inspreken. Blijft op de tablet. Doe het ter plekke — dan hoort Ida straks écht de stem van
+    oma of nonkel.</p>
+
+    <div class="fam-stap">
+      <input type="file" id="fam-foto" accept="image/*" capture="environment" hidden>
+      <button class="knop" id="fam-foto-knop">1 · maak een foto</button>
+      <img id="fam-voorbeeld" alt="" hidden>
+    </div>
+
+    <label class="fam-stap">
+      <span class="uitleg">2 · Hoe noemt Ida deze persoon?</span>
+      <input type="text" id="fam-naam" placeholder="nonkel Steven" autocomplete="off">
+    </label>
+
+    <div class="fam-stap">
+      <button id="fam-opnemen" class="knop">3 · laat hem of haar de naam inspreken</button>
+      <p class="uitleg">Ingedrukt houden en laten zeggen: "nonkel Steven". Een groetje voor Ida
+      erachter mag: "dag Ida!"</p>
+    </div>
+
+    <div class="rij-knoppen">
+      <button class="knop" id="fam-bewaar">bewaar deze persoon</button>
+    </div>
+    <p class="melding" id="fam-melding"></p>
+
+    <div id="fam-lijst"></div>
+  </section>
 
   <section class="kaart">
     <h2>Een gastje laat spelen</h2>
@@ -190,6 +235,7 @@ import { Opslag } from './js/opslag.js';
 import { Zeg }    from './js/zeg.js';
 import { Log }    from './js/log.js';
 import { Motor }  from './js/motor.js';
+import { Familie, verkleinFoto } from './js/familie.js';
 import { laadLijst } from './js/lijst.js';
 
 const $ = id => document.getElementById(id);
@@ -400,6 +446,104 @@ document.querySelectorAll('[data-gast]').forEach(b => {
   };
 });
 
+/* ---------- familie toevoegen ---------- */
+let famFoto = null, famStem = null, famRec = null, famStart = 0, famBezig = false;
+
+function famZeg(t, soort = '') {
+  $('fam-melding').textContent = t;
+  $('fam-melding').className = 'melding ' + soort;
+}
+
+$('fam-foto-knop').onclick = () => $('fam-foto').click();
+$('fam-foto').onchange = async e => {
+  const b = e.target.files[0];
+  if (!b) return;
+  try {
+    famFoto = await verkleinFoto(b);            // 4 MB telefoonfoto -> klein vierkant
+    const v = $('fam-voorbeeld');
+    v.src = URL.createObjectURL(famFoto);
+    v.hidden = false;
+    famZeg('Foto klaar.', 'goed');
+  } catch (err) { famZeg(err.message, 'let-op'); }
+};
+
+/* Opnemen: dezelfde ingedrukt-houden-aanpak als de opnamestudio, inclusief het vangnet
+   op window — glijdt de vinger van de knop, dan stopt de opname alsnog. */
+async function famStartOpname() {
+  if (famBezig) return;
+  if (!stroom) { famZeg('Geef eerst toestemming voor de microfoon en herlaad.', 'let-op'); return; }
+  famBezig = true;
+  const stukken = [];
+  const type = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : '';
+  famRec = new MediaRecorder(stroom, type ? { mimeType: type } : undefined);
+  famRec.ondataavailable = e => { if (e.data.size) stukken.push(e.data); };
+  famRec.onstop = () => {
+    famBezig = false;
+    $('fam-opnemen').classList.remove('bezig');
+    if (Date.now() - famStart < 300) { famZeg('Te kort — even ingedrukt houden.', 'let-op'); return; }
+    famStem = new Blob(stukken, { type: famRec.mimeType || 'audio/webm' });
+    famZeg('Stem opgenomen — je hoort hem nu terug.', 'goed');
+    new Audio(URL.createObjectURL(famStem)).play().catch(() => {});
+  };
+  famStart = Date.now();
+  famRec.start();
+  $('fam-opnemen').classList.add('bezig');
+  famZeg('aan het opnemen…');
+}
+function famStopOpname() { if (famRec && famRec.state === 'recording') famRec.stop(); }
+
+$('fam-opnemen').addEventListener('pointerdown', e => {
+  e.preventDefault();
+  famStartOpname();
+  try { $('fam-opnemen').setPointerCapture(e.pointerId); } catch {}
+});
+$('fam-opnemen').addEventListener('pointerup', famStopOpname);
+addEventListener('pointerup', famStopOpname);
+addEventListener('pointercancel', famStopOpname);
+
+$('fam-bewaar').onclick = async () => {
+  const naam = $('fam-naam').value.trim();
+  if (!naam)    return famZeg('Vul eerst in hoe Ida deze persoon noemt.', 'let-op');
+  if (!famFoto) return famZeg('Er is nog geen foto.', 'let-op');
+  if (!famStem) return famZeg('Laat de naam nog inspreken — anders hoort Ida niets.', 'let-op');
+  await Familie.voegToe({ naam, fotoBlob: famFoto, stemBlob: famStem });
+  await Zeg.laad();
+  famFoto = famStem = null;
+  $('fam-naam').value = '';
+  $('fam-voorbeeld').hidden = true;
+  famZeg(naam + ' is toegevoegd.', 'goed');
+  toonFamilie();
+};
+
+async function toonFamilie() {
+  const lijst = Familie.lijst();
+  const veld = $('fam-lijst');
+  veld.innerHTML = '';
+  if (!lijst.length) {
+    veld.innerHTML = '<p class="uitleg">Nog niemand toegevoegd. Vanaf twee personen komt het ' +
+      'spel "onze namen" vanzelf in beeld — met minder dan twee valt er niets te kiezen.</p>';
+    return;
+  }
+  for (const p of lijst) {
+    const rij = document.createElement('div');
+    rij.className = 'fam-rij';
+    const url = await Familie.fotoUrl(p.id);
+    rij.innerHTML =
+      (url ? `<img src="${url}" alt="">` : '') +
+      `<span class="naam">${p.naam.replace(/</g, '&lt;')}</span>` +
+      `<span class="staat">${p.heeftStem ? '' : 'geen stem'}</span>` +
+      `<button data-weg="${p.id}">weg</button>`;
+    veld.appendChild(rij);
+  }
+  veld.onclick = async e => {
+    const b = e.target.closest('[data-weg]');
+    if (!b) return;
+    await Familie.verwijder(b.dataset.weg);
+    await Zeg.laad();
+    toonFamilie();
+  };
+}
+
 /* De gastmodus vervalt vanzelf als de app dichtgaat, maar dat is te laat als je de
    tablet tussendoor aan Ida teruggeeft. Daarom een uitknop, die enkel verschijnt
    wanneer de gastmodus echt aanstaat. */
@@ -458,6 +602,7 @@ async function toonLetters() {
   toonLog();
   toonLetters();
   toonGastStand();
+  toonFamilie();
   // Zinnetjes hebben geen letter of plaatje: daar toont het vakje het nummer uit de
   // opnamelijst, zodat het overeenkomt met het blad waar je van leest.
   $('raster').innerHTML = lijst.map((x, n) =>
