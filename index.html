@@ -32,19 +32,28 @@
   /* Het vriendje krijgt een vaste hoogte. Zonder dat verspringt het hele scherm zodra
      het aantal kaarten wijzigt — en dan verplaatst de knop zich onder haar vinger. */
   #s-spel .vriendje{height:clamp(70px,13vh,120px);width:auto;flex:none}
-  /* Het eindscherm is het laatste wat ze ziet: daar mag het vriendje groot zijn.
+  /* Het eindscherm is het laatste wat ze ziet: daar mag het figuurtje groot zijn.
      Klein in het midden van een leeg scherm voelt als een foutmelding, niet als een feestje. */
   #s-einde .vriendje{height:min(46vh,44vw,340px);width:auto}
-  #s-start .vriendje{height:min(30vh,32vw,220px);width:auto}
 
-  /* Startscherm: één ding om op te tikken. Geen menu, geen tekst — ze kan nog niet lezen. */
-  #start-knop{
-    width:clamp(140px,34vw,240px);height:clamp(140px,34vw,240px);border-radius:50%;
-    border:none;background:var(--vriend);box-shadow:0 7px 0 var(--vriend-diep);
-    display:grid;place-items:center;cursor:pointer;
+  /* Wie speelt er vandaag mee? Geen tekst — ze kan nog niet lezen, dus de figuurtjes
+     zelf zijn de knoppen. Tikken start meteen het spel. */
+  #kiezers{display:grid;gap:clamp(.6rem,2.2vw,1.2rem);grid-template-columns:repeat(3,1fr);
+    width:min(100%,34rem)}
+  @media (orientation:landscape){ #kiezers{grid-template-columns:repeat(6,1fr);width:min(100%,58rem)} }
+  #kiezers button{
+    border:2px solid var(--kaart-diep);border-radius:24px;background:var(--kaart);
+    box-shadow:0 5px 0 var(--kaart-diep);padding:.5rem;cursor:pointer;
+    display:grid;place-items:center;min-height:var(--raak-min);
+    transition:transform .15s ease,box-shadow .15s ease;
   }
-  #start-knop svg{width:42%;height:42%;fill:#FFF9F2}
-  #start-knop:active{transform:translateY(5px);box-shadow:0 2px 0 var(--vriend-diep)}
+  #kiezers button:active{transform:translateY(4px);box-shadow:0 1px 0 var(--kaart-diep)}
+  /* wie de vorige keer meespeelde, staat alvast in het groen */
+  #kiezers button.gekozen{border-color:var(--goed);box-shadow:0 5px 0 var(--goed)}
+  /* Op BREEDTE schalen, niet op hoogte: de kolom bepaalt hoeveel ruimte er is. Andersom
+     puilden de figuurtjes uit hun knop en overlapten ze elkaar. */
+  #kiezers .vriendje{width:100%;height:auto;max-height:26vh;display:block}
+  #eind-plek .vriendje{height:min(46vh,44vw,340px);width:auto}
 
   #luister{width:clamp(76px,13vh,104px);height:clamp(76px,13vh,104px);flex:none}
 
@@ -131,18 +140,10 @@
 
 <button id="ouderpoort" aria-label="Ouderscherm — houd drie seconden ingedrukt"></button>
 
-<!-- 1. beginnen -->
+<!-- 1. wie speelt er vandaag mee? Tikken op een figuurtje start meteen het spel:
+     evenveel tikken als een startknop, maar zij kiest. -->
 <div class="scherm aan" id="s-start">
-  <svg viewBox="0 0 120 110" class="vriendje" aria-hidden="true">
-    <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
-    <circle cx="60" cy="58" r="42" fill="#E8956B"/>
-    <circle cx="24" cy="34" r="10" fill="#E8956B"/><circle cx="96" cy="34" r="10" fill="#E8956B"/>
-    <circle cx="46" cy="52" r="7" fill="#3B2C22"/><circle cx="74" cy="52" r="7" fill="#3B2C22"/>
-    <path class="mond" d="M48 74 Q60 80 72 74" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
-  </svg>
-  <button id="start-knop" aria-label="Beginnen">
-    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-  </button>
+  <div id="kiezers"></div>
 </div>
 
 <!-- 2. welke hoor je? -->
@@ -152,13 +153,7 @@
     <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg>
   </button>
   <div id="keuzes"></div>
-  <svg viewBox="0 0 120 110" class="vriendje" id="maatje" aria-hidden="true">
-    <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
-    <circle cx="60" cy="58" r="42" fill="#E8956B"/>
-    <circle cx="24" cy="34" r="10" fill="#E8956B"/><circle cx="96" cy="34" r="10" fill="#E8956B"/>
-    <circle cx="46" cy="52" r="7" fill="#3B2C22"/><circle cx="74" cy="52" r="7" fill="#3B2C22"/>
-    <path class="mond" id="mond" d="M48 74 Q60 80 72 74" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
-  </svg>
+  <div id="maatje-plek"></div>
 </div>
 
 <!-- 3. klankmuur: vrij spel, niets kan fout -->
@@ -171,19 +166,14 @@
 
 <!-- 4. klaar voor vandaag -->
 <div class="scherm" id="s-einde">
-  <svg viewBox="0 0 120 110" class="vriendje blij" aria-hidden="true">
-    <ellipse cx="60" cy="102" rx="34" ry="6" fill="#E0D2BB"/>
-    <circle cx="60" cy="58" r="42" fill="#E8956B"/>
-    <circle cx="24" cy="34" r="10" fill="#E8956B"/><circle cx="96" cy="34" r="10" fill="#E8956B"/>
-    <circle cx="46" cy="52" r="7" fill="#3B2C22"/><circle cx="74" cy="52" r="7" fill="#3B2C22"/>
-    <path class="mond" d="M44 70 Q60 88 76 70" stroke="#3B2C22" stroke-width="5" fill="none" stroke-linecap="round"/>
-  </svg>
+  <div id="eind-plek"></div>
 </div>
 
 <script type="module">
 import { Zeg }   from './js/zeg.js';
 import { Log }   from './js/log.js';
 import { Motor } from './js/motor.js';
+import { laadFiguren, tekenFiguur, figuur, Gekozen, MONDEN } from './js/figuren.js';
 
 /* Stand 1, nu met de meegroei-motor: de motor kiest welke letter aan de beurt is en
    hoeveel keuzes erbij horen. Alles wat een drempel is, staat in data/motor.json. */
@@ -191,18 +181,22 @@ import { Motor } from './js/motor.js';
 let klankVan = {};                 // id -> wat de computerstem zegt als er geen opname is
 let woorden = [];                  // {woord, emoji, begint_met}
 let huidige = null, bezig = false;
-let sessieStart = 0, vraagTijd = 0, gastModus = null, rondeNr = 0;
+let sessieStart = 0, vraagTijd = 0, gastModus = null, rondeNr = 0, mijnFiguur = 'maatje';
 
 const $ = id => document.getElementById(id);
 const scherm = naam => document.querySelectorAll('.scherm')
   .forEach(s => s.classList.toggle('aan', s.id === 's-' + naam));
 
+/* Werkt voor élk figuurtje: ze delen dezelfde mond en dezelfde klassen. Dat is precies
+   waarom ze uit één lichaam met verkleedstukken bestaan. */
 function gezicht(stand) {
-  const m = $('maatje'), mond = $('mond');
+  const m = $('maatje-plek').querySelector('.vriendje');
+  const mond = m && m.querySelector('.mond');
+  if (!m || !mond) return;
   m.classList.remove('blij', 'kijkt');
-  if (stand === 'blij') { mond.setAttribute('d', 'M44 70 Q60 88 76 70'); m.classList.add('blij'); }
-  else if (stand === 'kijkt') { mond.setAttribute('d', 'M54 72 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0'); m.classList.add('kijkt'); }
-  else mond.setAttribute('d', 'M48 74 Q60 80 72 74');
+  if (stand === 'blij') { mond.setAttribute('d', MONDEN.blij); m.classList.add('blij'); }
+  else if (stand === 'kijkt') { mond.setAttribute('d', MONDEN.kijkt); m.classList.add('kijkt'); }
+  else mond.setAttribute('d', MONDEN.rustig);
 }
 
 const prijs = () => ['j1','j2','j3','j4','j5','j6','j7'][Math.floor(Math.random()*7)];
@@ -334,16 +328,39 @@ function klankmuur() {
 
 async function einde() {
   if (!gastModus) Log.boek('einde');
+  $('eind-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'blij', klas: 'vriendje blij' });
   scherm('einde');
   await Zeg.zeg('s3', 'jij hebt goed gewerkt vandaag', { wacht: true });
   await Zeg.zeg('s2', 'we stoppen hier, tot morgen');
 }
 
-async function beginSessie() {
+async function beginSessie(figuurId) {
+  mijnFiguur = figuurId;
+  Gekozen.zet(figuurId);
+  $('maatje-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'rustig' });
   sessieStart = Date.now();
-  if (!gastModus) Log.boek('start');
+  if (!gastModus) Log.boek('start', { figuur: figuurId });
   await Zeg.zeg('s1', 'dag, zullen we luisteren?', { wacht: true });
   ronde();
+}
+
+/* Het kiesscherm. De figuurtjes zijn zelf de knoppen — tikken start het spel, dus het
+   kost geen extra stap ten opzichte van een startknop. */
+async function bouwKiezers() {
+  const lijst = await laadFiguren();
+  const vorige = Gekozen.lees() || lijst[0].id;
+  const veld = $('kiezers');
+  veld.innerHTML = '';
+  // wie de vorige keer meespeelde staat vooraan
+  const geordend = [...lijst].sort((a, b) => (b.id === vorige) - (a.id === vorige));
+  for (const f of geordend) {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', 'speel met ' + f.naam);
+    b.className = f.id === vorige ? 'gekozen' : '';
+    b.innerHTML = tekenFiguur(f.id, { mond: 'blij' });
+    b.onclick = () => beginSessie(f.id);
+    veld.appendChild(b);
+  }
 }
 
 /* ---- opstarten ---- */
@@ -369,7 +386,7 @@ async function beginSessie() {
   await Motor.laad(letters, gastModus ? { profiel: 'gast', gastSoort: gastModus } : {});
   await Zeg.laad();
 
-  $('start-knop').onclick = beginSessie;
+  await bouwKiezers();
   $('luister').onclick = hoorVraag;
   $('verder').onclick = () => ronde();
 

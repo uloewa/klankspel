@@ -1,0 +1,23 @@
+{
+  "_lees_dit_eerst": [
+    "De figuurtjes waaruit Ida kiest. Bewust GEEN nagemaakte Disney- of Paw Patrol-figuren:",
+    "die zijn beschermd en deze repo staat publiek. Dit zijn eigen archetypes in de stijl van",
+    "het vriendje — een kroon, een helm, een sneeuwvlok — die ze wél herkent.",
+    "",
+    "Ze delen allemaal hetzelfde lichaam en dezelfde mond, zodat ze ALLEMAAL blij en",
+    "nieuwsgierig kunnen kijken. Dat is geen detail: het vriendje is het enige kanaal waarlangs",
+    "Ida feedback krijgt zonder te kunnen lezen. Een figuur die niet kan reageren, hoort hier",
+    "niet thuis.",
+    "",
+    "Een figuur toevoegen = hier een regel bijzetten. De tekencode kent de onderdelen",
+    "(kroon, helm, sneeuwvlok, schelp, hoorn, oren, flaporen, haar) uit js/figuren.js."
+  ],
+  "figuren": [
+    { "id": "maatje",     "naam": "het vriendje", "huid": "#E8956B", "diep": "#C9764F", "onderdelen": ["oren"] },
+    { "id": "prinses",    "naam": "de prinses",   "huid": "#F0B49A", "diep": "#D48CA0", "onderdelen": ["haar", "kroon"], "haar": "#6B3F26" },
+    { "id": "hond",       "naam": "de hulphond",  "huid": "#D9A05B", "diep": "#B07F3C", "onderdelen": ["flaporen", "helm"], "helm": "#C9483F" },
+    { "id": "ijs",        "naam": "de ijsprinses","huid": "#AFCFE4", "diep": "#7FA9C4", "onderdelen": ["haar", "sneeuwvlok"], "haar": "#DCEBF5" },
+    { "id": "zeemeermin", "naam": "de zeemeermin","huid": "#86C6AB", "diep": "#579C82", "onderdelen": ["haar", "schelp"], "haar": "#C96F8E" },
+    { "id": "eenhoorn",   "naam": "de eenhoorn",  "huid": "#EADFF2", "diep": "#B79FD0", "onderdelen": ["manen", "hoorn"], "haar": "#C58FC7" }
+  ]
+}
