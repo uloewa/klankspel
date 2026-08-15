@@ -1,0 +1,86 @@
+{
+  "_lees_dit_eerst": [
+    "Alle knoppen van de meegroei-motor staan hier, niet in de code. Bijsturen na twee weken",
+    "echt gebruik is dan een getal wijzigen, geen verbouwing.",
+    "",
+    "De kern: mik op ONGEVEER 85% juist. Dat is de gemeten zoete zone waarin leren het snelst",
+    "gaat (Wilson e.a., Nature Communications 2019). Te makkelijk = verveling, te moeilijk =",
+    "afhaken. Ida zat bij haar eerste beurt ruim boven die zone en was snel beu."
+  ],
+
+  "mikpunt": {
+    "venster": 12,
+    "_venster": "over hoeveel recente antwoorden we haar treffers meten",
+    "moeilijker_boven": 0.90,
+    "makkelijker_onder": 0.70,
+    "_ertussen": "tussen 0,70 en 0,90 verandert er niets — dat is de zone waar ze hoort te zitten"
+  },
+
+  "keuzes": {
+    "min": 2,
+    "max": 4,
+    "_waarom": "met 2 keuzes is 50% al gokwerk; meer keuzes maakt haar score ook eerlijker meetbaar"
+  },
+
+  "letters": {
+    "max_actief": 6,
+    "_max_actief": "meer past niet in het werkgeheugen van een kleuter",
+    "min_actief": 3,
+    "_min_actief": [
+      "De motor mag een letter tijdelijk PARKEREN als het echt niet lukt, tot hier.",
+      "Zonder die uitweg zat hij vast: bij 2 keuzes is er geen weg omlaag meer, en dan",
+      "bleef hij vragen stellen die ze niet aankon (gemeten in de simulatie: 63%).",
+      "Dit botst niet met 'nooit iets afnemen wat ze al kon' — er wordt alleen last",
+      "weggenomen, en enkel bij een letter die ze nog niet kent. Ze merkt er niets van."
+    ],
+    "stevig_vanaf": 4,
+    "_stevig_vanaf": "sterkte loopt van 0 tot 5",
+    "nieuwe_letter_na_stevig": 3,
+    "_nieuwe_letter_na_stevig": "pas een letter erbij als er zoveel stevig zitten",
+    "sterkte_max": 5
+  },
+
+  "remmen": {
+    "frustratie_fouten_op_rij": 3,
+    "_frustratie": "daarna naar de klankmuur — ze loopt nooit tegen een muur",
+    "verveling_juist_op_rij": 6,
+    "_verveling": "meteen moeilijker of een nieuwe letter; dit is de rem die bij Ida's eerste beurt ontbrak",
+    "verveling_vereist_treffers": 0.80,
+    "_verveling_vereist_treffers": [
+      "Een reeks goede antwoorden telt alleen als verveling wanneer ze het OOK in het",
+      "algemeen goed doet. Met twee keuzes haal je zes op rij door te gokken; zonder deze",
+      "eis duwde de verveelrem de moeilijkheid omhoog terwijl ze in werkelijkheid worstelde.",
+      "In de simulatie botsten de twee remmen daardoor 18 keer op elkaar."
+    ],
+    "afronden_na_verveelrem": 2,
+    "_afronden": "gaat de verveelrem twee keer af in een sessie, dan is de rek eruit: netjes afronden"
+  },
+
+  "ruis": {
+    "te_snel_ms": 400,
+    "_te_snel": "een tik binnen deze tijd telt niet mee — dan heeft ze niet gekeken, maar getikt",
+    "fouten_voor_daling": 2,
+    "_fouten_voor_daling": "een eerste fout op een letter verlaagt de sterkte niet; een 4-jarige tikt ook gewoon mis"
+  },
+
+  "sessie": {
+    "duur_minuten": 8,
+    "_duur": "stopt hierna, maar ALTIJD na een juist antwoord — nooit midden in een fout"
+  },
+
+  "lijkt_op_elkaar": [
+    ["m", "n"], ["b", "d"], ["p", "q"], ["p", "b"], ["d", "g"],
+    ["a", "o"], ["i", "l"], ["u", "v"], ["e", "o"], ["v", "w"], ["ie", "ei"]
+  ],
+  "_lijkt_op_elkaar": [
+    "Deze paren zet de motor pas naast elkaar als de rest zit. Ze door elkaar halen is",
+    "normaal en geen teken van falen, maar het is wel de moeilijkste stap — dus niet de eerste."
+  ],
+
+  "gast": {
+    "jonger":   { "keuzes": 2, "aantal_letters": 3 },
+    "even_oud": { "keuzes": 2, "aantal_letters": 4 },
+    "ouder":    { "keuzes": 3, "aantal_letters": 6 },
+    "_waarom": "een gast begint altijd rustig: te makkelijk is even saai, te moeilijk laat een kind afhaken"
+  }
+}

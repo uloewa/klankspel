@@ -2,11 +2,15 @@
    waarin ze ingesproken worden. De volgorde is niet willekeurig: eerst de
    klanken (het moeilijkste, als je nog fris bent), dan woorden, dan zinnetjes. */
 
-export async function laadLijst(basis = './data/') {
+// Pad aan de module hangen, niet aan de pagina: anders zoekt een pagina in een submap
+// in haar eigen map en vindt ze de gegevens niet.
+const DATA = new URL('../data/', import.meta.url);
+
+export async function laadLijst(basis = DATA) {
   const [klanken, woorden, zinnen] = await Promise.all([
-    fetch(basis + 'klanken.json').then(r => r.json()),
-    fetch(basis + 'woorden.json').then(r => r.json()),
-    fetch(basis + 'aanmoedigingen.json').then(r => r.json())
+    fetch(new URL('klanken.json', basis)).then(r => r.json()),
+    fetch(new URL('woorden.json', basis)).then(r => r.json()),
+    fetch(new URL('aanmoedigingen.json', basis)).then(r => r.json())
   ]);
 
   const uit = [];

@@ -65,6 +65,15 @@
   @media (prefers-reduced-motion: reduce){
     #ouderpoort.gaat::after{transition:opacity .2s ease}
   }
+
+  /* Gastmodus zichtbaar zonder één letter tekst: een gekleurde rand rondom. Thijs ziet
+     in één oogopslag dat dit niet Ida's spel is; voor een kind is het gewoon een randje. */
+  body.gast{
+    background:
+      linear-gradient(var(--vriend),var(--vriend)) top/100% 10px no-repeat,
+      linear-gradient(var(--vriend),var(--vriend)) bottom/100% 10px no-repeat,
+      var(--papier);
+  }
 </style>
 </head>
 <body>
@@ -120,18 +129,16 @@
 </div>
 
 <script type="module">
-import { Zeg } from './js/zeg.js';
-import { Log } from './js/log.js';
+import { Zeg }   from './js/zeg.js';
+import { Log }   from './js/log.js';
+import { Motor } from './js/motor.js';
 
-/* Stand 1. Twee keuzes, enorme knoppen, geen menu, geen score, geen tijdsdruk.
-   De slimme letterkeuze (wat kent ze al, wat moet vaker terugkomen) is bewust nog
-   niet hier: eerst zien of dit spel haar boeit. */
+/* Stand 1, nu met de meegroei-motor: de motor kiest welke letter aan de beurt is en
+   hoeveel keuzes erbij horen. Alles wat een drempel is, staat in data/motor.json. */
 
-const SESSIE_MS = 8 * 60 * 1000;   // stopt hierna, maar altijd NA een juist antwoord
-const FRUSTRATIE = 3;              // fouten na elkaar -> klankmuur, nooit een muur
-
-let letters = [], doel = null, bezig = false, vorigDoel = null;
-let foutOpRij = 0, sessieStart = 0, wilStoppen = false;
+let klankVan = {};                 // id -> wat de computerstem zegt als er geen opname is
+let huidige = null, bezig = false;
+let sessieStart = 0, vraagTijd = 0, gastModus = null;
 
 const $ = id => document.getElementById(id);
 const scherm = naam => document.querySelectorAll('.scherm')
@@ -148,82 +155,82 @@ function gezicht(stand) {
 const prijs = () => ['j1','j2','j3','j4','j5','j6','j7'][Math.floor(Math.random()*7)];
 const troost = () => ['n1','n2','n3','n4'][Math.floor(Math.random()*4)];
 
-function ronde() {
+function ronde(vraag = null) {
   bezig = false;
   gezicht('rustig');
   scherm('spel');
-
-  // niet twee keer na elkaar dezelfde vraag
-  let kandidaten = letters.filter(l => l.id !== vorigDoel);
-  doel = kandidaten[Math.floor(Math.random() * kandidaten.length)];
-  vorigDoel = doel.id;
-  const afleider = letters.filter(l => l.id !== doel.id)[Math.floor(Math.random() * (letters.length - 1))];
+  huidige = vraag || Motor.volgende();
 
   const veld = $('keuzes');
   veld.innerHTML = '';
-  [doel, afleider].sort(() => Math.random() - .5).forEach(l => {
+  huidige.opties.forEach(id => {
     const b = document.createElement('button');
     b.className = 'kaart-letter';
-    b.textContent = l.id;
-    b.setAttribute('aria-label', 'letter ' + l.id);
-    b.onclick = () => antwoord(b, l);
+    b.textContent = id;
+    b.setAttribute('aria-label', 'letter ' + id);
+    b.onclick = () => antwoord(b, id);
     veld.appendChild(b);
   });
-  setTimeout(() => Zeg.zeg(doel.id, doel.klank), 400);
+  setTimeout(() => {
+    Zeg.zeg(huidige.doel, klankVan[huidige.doel]);
+    vraagTijd = Date.now();       // vanaf hier meten we hoe snel ze tikt
+  }, 400);
 }
 
-async function antwoord(knop, letter) {
+async function antwoord(knop, gekozen) {
   if (bezig) return;
+  const reactie = vraagTijd ? Date.now() - vraagTijd : null;
+  const r = Motor.antwoord(huidige.doel, gekozen, reactie, huidige.herhaling);
 
-  if (letter.id === doel.id) {
+  if (r.juist) {
     bezig = true;
-    foutOpRij = 0;
     knop.classList.add('juist');
     gezicht('blij');
-    Log.boek('juist', { letter: doel.id });
+    if (!gastModus) Log.boek('juist', { letter: huidige.doel, ms: reactie, telt: r.teltMee });
     await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
 
     // De sessie eindigt ALTIJD op een juist antwoord, nooit midden in een fout.
-    if (wilStoppen || Date.now() - sessieStart > SESSIE_MS) return einde();
-    setTimeout(ronde, 300);
+    if (r.magAfronden || Date.now() - sessieStart > Motor.sessieMs()) return einde();
+    setTimeout(() => ronde(), 300);
     return;
   }
 
   // Fout: geen rood, geen straf. De klank nog eens, de juiste licht op.
-  foutOpRij++;
-  Log.boek('fout', { letter: doel.id, gekozen: letter.id });
+  if (!gastModus) Log.boek('fout', { letter: huidige.doel, gekozen, ms: reactie, telt: r.teltMee });
   knop.classList.add('mis');
   gezicht('kijkt');
-  await Zeg.zeg(doel.id, doel.klank, { wacht: true });
+  await Zeg.zeg(huidige.doel, klankVan[huidige.doel], { wacht: true });
   [...document.querySelectorAll('.kaart-letter')]
-    .find(b => b.textContent === doel.id)?.classList.add('wijs');
+    .find(b => b.textContent === huidige.doel)?.classList.add('wijs');
 
-  if (foutOpRij >= FRUSTRATIE) {
-    foutOpRij = 0;
+  if (r.gefrustreerd) {
     await Zeg.zeg(troost(), 'goed geprobeerd', { wacht: true });
-    klankmuur();
+    return klankmuur();
   }
+  // Meteen dezelfde vraag, makkelijker gemaakt: een mislukte poging helpt pas als ze
+  // er kort daarna wél in slaagt.
+  setTimeout(() => ronde(Motor.herhaal(huidige.doel)), 700);
 }
 
 /* De klankmuur is de uitweg, niet een straf: hier kan niets fout gaan.
    Ze tikt een letter, ze hoort hem. Verder gaan mag wanneer ze wil. */
 function klankmuur() {
-  Log.boek('muur');
+  if (!gastModus) Log.boek('muur');
   scherm('muur');
   const m = $('muur');
   m.innerHTML = '';
-  letters.forEach(l => {
+  Motor.toestand().actief.forEach(id => {
     const b = document.createElement('button');
     b.className = 'kaart-letter';
-    b.textContent = l.id;
-    b.setAttribute('aria-label', 'letter ' + l.id);
-    b.onclick = () => Zeg.zeg(l.id, l.klank);
+    b.textContent = id;
+    b.setAttribute('aria-label', 'letter ' + id);
+    b.onclick = () => Zeg.zeg(id, klankVan[id]);
     m.appendChild(b);
   });
 }
 
 async function einde() {
-  Log.boek('einde');
+  if (!gastModus) Log.boek('einde');
   scherm('einde');
   await Zeg.zeg('s3', 'jij hebt goed gewerkt vandaag', { wacht: true });
   await Zeg.zeg('s2', 'we stoppen hier, tot morgen');
@@ -231,9 +238,7 @@ async function einde() {
 
 async function beginSessie() {
   sessieStart = Date.now();
-  wilStoppen = false;
-  foutOpRij = 0;
-  Log.boek('start');
+  if (!gastModus) Log.boek('start');
   await Zeg.zeg('s1', 'dag, zullen we luisteren?', { wacht: true });
   ronde();
 }
@@ -241,21 +246,28 @@ async function beginSessie() {
 /* ---- opstarten ---- */
 (async function () {
   const klanken = await fetch('./data/klanken.json').then(r => r.json());
-  // stand 1: de eerste zes uit de opbouw — rekbaar en makkelijk te horen,
-  // en bewust geen paren die op elkaar lijken (m/n, b/d) naast elkaar
-  letters = klanken.klanken
+  // De leervolgorde: rekbaar en makkelijk te horen eerst, de verwarrende paren laat.
+  const letters = klanken.klanken
     .filter(k => k.start)
     .sort((a, b) => a.start - b.start)
-    .slice(0, 6)
     .map(k => ({ id: k.id, klank: k.zeg }));
+  letters.forEach(l => { klankVan[l.id] = l.klank; });
 
+  /* Gastmodus staat in sessionStorage, en dat is precies goed: die verdwijnt vanzelf
+     zodra de app dichtgaat. Anders staat hij er over drie weken nog aan en registreert
+     de app Ida's voortgang niet meer. */
+  gastModus = sessionStorage.getItem('klankspel-gast');
+  if (gastModus) document.body.classList.add('gast');
+
+  await Motor.laad(letters, gastModus ? { profiel: 'gast', gastSoort: gastModus } : {});
   await Zeg.laad();
+
   $('start-knop').onclick = beginSessie;
-  $('luister').onclick = () => doel && Zeg.zeg(doel.id, doel.klank);
-  $('verder').onclick = ronde;
+  $('luister').onclick = () => huidige && Zeg.zeg(huidige.doel, klankVan[huidige.doel]);
+  $('verder').onclick = () => ronde();
 
   // Weggaan halverwege telt ook als informatie: waar haakte ze af?
-  addEventListener('pagehide', () => { if (sessieStart) Log.boek('stop'); });
+  addEventListener('pagehide', () => { if (sessieStart && !gastModus) Log.boek('stop'); });
 })();
 
 /* ---- ouderpoort: drie seconden ingedrukt ---- */

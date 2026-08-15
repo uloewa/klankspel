@@ -70,6 +70,15 @@
   .uitleg{margin:0;color:var(--zacht);font-size:.92rem}
   details summary{cursor:pointer;color:var(--zacht);font-size:.95rem}
   .stem-uit{font-size:.92rem;color:var(--zacht);margin:0}
+  #letters{display:flex;flex-direction:column;gap:.5rem}
+  .letterrij{display:flex;align-items:center;gap:.7rem}
+  .letterrij .l{font-family:var(--letter);font-weight:700;font-size:1.6rem;width:2.4rem;text-align:center}
+  .letterrij .staaf{flex:1;height:12px;border-radius:999px;background:var(--kaart-diep);overflow:hidden}
+  .letterrij .staaf i{display:block;height:100%;background:var(--goed)}
+  .letterrij .cijfers{font-size:.85rem;color:var(--zacht);font-variant-numeric:tabular-nums;min-width:6.5rem;text-align:right}
+  .letterrij .stel{display:flex;gap:.3rem}
+  .letterrij .stel button{width:2.2rem;height:2.2rem;border-radius:8px;border:1px solid var(--kaart-diep);
+    background:var(--kaart);font:inherit;cursor:pointer;color:var(--inkt)}
   #status{display:flex;flex-direction:column;gap:.5rem;font-size:.95rem}
   .regel{display:flex;align-items:center;gap:.6rem}
   .stip{width:.85rem;height:.85rem;border-radius:50%;background:var(--zacht);flex:none}
@@ -84,6 +93,26 @@
     <a href="./">‹ terug naar de app</a>
     <h1>Ouderscherm</h1>
   </div>
+
+  <section class="kaart">
+    <h2>Een gastje laat spelen</h2>
+    <p class="uitleg">Kies hoe oud het kind ongeveer is. Wat een gast doet wordt <strong>niet</strong>
+    bijgehouden — Ida's voortgang blijft onaangeroerd. De gastmodus stopt vanzelf zodra de app
+    dichtgaat; je herkent hem aan de oranje rand.</p>
+    <div class="rij-knoppen">
+      <button class="knop" data-gast="jonger">jonger dan Ida</button>
+      <button class="knop" data-gast="even_oud">even oud</button>
+      <button class="knop" data-gast="ouder">ouder</button>
+    </div>
+  </section>
+
+  <section class="kaart">
+    <h2>Wat denkt de app dat Ida kent</h2>
+    <p class="uitleg">Dit is een gok van de app, geen oordeel over Ida. Ze kan niet zien of een
+    fout betekent "ze kent het niet" of "ze tikte mis". Zie je dat het ernaast zit, zet het dan
+    zelf goed — jij ziet haar, de app niet.</p>
+    <div id="letters"></div>
+  </section>
 
   <section class="kaart">
     <h2>Wat deed Ida</h2>
@@ -156,6 +185,7 @@
 import { Opslag } from './js/opslag.js';
 import { Zeg }    from './js/zeg.js';
 import { Log }    from './js/log.js';
+import { Motor }  from './js/motor.js';
 import { laadLijst } from './js/lijst.js';
 
 const $ = id => document.getElementById(id);
@@ -357,11 +387,54 @@ $('log-uitvoer').onclick = () => {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 };
 
+/* Gastmodus in sessionStorage: verdwijnt vanzelf als de app dichtgaat, zodat hij
+   nooit weken blijft hangen en Ida's voortgang stilzwijgend niet meer geregistreerd wordt. */
+document.querySelectorAll('[data-gast]').forEach(b => {
+  b.onclick = () => {
+    sessionStorage.setItem('klankspel-gast', b.dataset.gast);
+    location.href = './';
+  };
+});
+
+async function toonLetters() {
+  const klanken = await fetch('./data/klanken.json').then(r => r.json());
+  const letters = klanken.klanken.filter(k => k.start).sort((a, b) => a.start - b.start)
+    .map(k => ({ id: k.id, klank: k.zeg }));
+  await Motor.laad(letters);
+
+  const veld = $('letters');
+  const teken = () => {
+    const max = Motor.config().letters.sterkte_max;
+    veld.innerHTML = '';
+    for (const l of Motor.overzicht()) {
+      const rij = document.createElement('div');
+      rij.className = 'letterrij';
+      rij.innerHTML =
+        `<span class="l">${l.letter}</span>` +
+        `<span class="staaf"><i style="width:${l.sterkte / max * 100}%"></i></span>` +
+        `<span class="cijfers">${l.juist}&nbsp;goed / ${l.fout}&nbsp;mis</span>` +
+        `<span class="stel"><button data-min="${l.letter}" aria-label="minder">−</button>` +
+        `<button data-plus="${l.letter}" aria-label="meer">+</button></span>`;
+      veld.appendChild(rij);
+    }
+  };
+  veld.onclick = e => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    const id = b.dataset.min || b.dataset.plus;
+    const nu = Motor.overzicht().find(x => x.letter === id).sterkte;
+    Motor.zetSterkte(id, nu + (b.dataset.plus ? 1 : -1));
+    teken();
+  };
+  teken();
+}
+
 (async function start() {
   lijst = await laadLijst();
   await Zeg.laad();
   toonStatus();
   toonLog();
+  toonLetters();
   // Zinnetjes hebben geen letter of plaatje: daar toont het vakje het nummer uit de
   // opnamelijst, zodat het overeenkomt met het blad waar je van leest.
   $('raster').innerHTML = lijst.map((x, n) =>

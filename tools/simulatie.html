@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Simulatie meegroei-motor</title>
+<style>
+  body{font-family:ui-monospace,monospace;background:#F6EBD9;color:#2E2A26;
+    margin:0;padding:1.5rem;line-height:1.5;font-size:14px}
+  h1{font-family:ui-sans-serif,sans-serif;font-size:1.2rem}
+  pre{white-space:pre-wrap;margin:0}
+  .goed{color:#3F7D5C;font-weight:700} .mis{color:#B4453C;font-weight:700}
+</style>
+</head>
+<body>
+<h1>Simulatie — doet de meegroei-motor wat hij belooft?</h1>
+<pre id="uit">bezig…</pre>
+
+<script type="module">
+import { Motor } from '../js/motor.js';
+
+/* Een nagebootst kind. Drie letters kent ze goed, drie niet — die gokt ze.
+   Dit is bewust hard: als de motor haar naar de zone van ~85% kan trekken terwijl
+   de helft van de letters gokwerk is, dan werkt hij ook bij Ida. */
+const KENT     = { m: 0.95, s: 0.95, r: 0.93 };
+const BEURTEN  = 500;
+
+function tikt(doel, opties) {
+  const kans = KENT[doel];
+  if (kans != null && Math.random() < kans) return doel;
+  // kent ze niet (of vergist zich): willekeurig uit de opties
+  return opties[Math.floor(Math.random() * opties.length)];
+}
+
+const letters = [
+  { id:'m' }, { id:'s' }, { id:'r' }, { id:'v' }, { id:'a' }, { id:'i' },
+  { id:'o' }, { id:'e' }, { id:'l' }, { id:'n' }
+];
+
+const regels = [];
+const zeg = t => regels.push(t);
+
+localStorage.removeItem('klankspel-motor');
+await Motor.laad(letters);
+
+let juist = 0, totaal = 0, verveeld = 0, gefrustreerd = 0, herhalingen = 0;
+let maxActief = 0, nieuweLetters = 0;
+const laatste100 = [];
+const keuzesTelling = {};
+const getoond = {};
+/* Hoe vaak een letter aan bod komt TERWIJL hij in omloop is. Kaal tellen deugt niet:
+   een geparkeerde letter is per definitie minder getoond, en dan meet je het parkeren
+   in plaats van de weging. */
+const beurtenActief = {};
+
+for (let n = 0; n < BEURTEN; n++) {
+  for (const id of Motor.toestand().actief) beurtenActief[id] = (beurtenActief[id] || 0) + 1;
+  const vraag = Motor.volgende();
+  getoond[vraag.doel] = (getoond[vraag.doel] || 0) + 1;
+  keuzesTelling[vraag.opties.length] = (keuzesTelling[vraag.opties.length] || 0) + 1;
+  maxActief = Math.max(maxActief, Motor.toestand().actief.length);
+
+  const gekozen = tikt(vraag.doel, vraag.opties);
+  const r = Motor.antwoord(vraag.doel, gekozen, 1500);
+
+  if (r.teltMee) { totaal++; if (r.juist) juist++; laatste100.push(r.juist ? 1 : 0); }
+  if (r.verveeld) verveeld++;
+  if (r.gefrustreerd) gefrustreerd++;
+  if (r.nieuweLetter) nieuweLetters++;
+
+  // wat het spel doet na een fout: meteen dezelfde vraag, makkelijker gemaakt
+  if (!r.juist) {
+    herhalingen++;
+    const h = Motor.herhaal(vraag.doel);
+    Motor.antwoord(h.doel, tikt(h.doel, h.opties), 1500, true);
+  }
+}
+
+const eind = laatste100.slice(-100);
+const pctEind = Math.round(eind.reduce((a,b)=>a+b,0) / eind.length * 100);
+const pctTotaal = Math.round(juist / totaal * 100);
+const s = Motor.toestand();
+const cfg = Motor.config();
+
+// kans om aan de beurt te komen, per beurt dat de letter in omloop was
+const kans = l => (getoond[l] || 0) / Math.max(1, beurtenActief[l] || 0);
+const gem = ls => ls.length ? ls.map(kans).reduce((a,b)=>a+b,0) / ls.length : 0;
+const kentLijst = ['m','s','r'].filter(l => beurtenActief[l]);
+const nietLijst = Object.keys(beurtenActief).filter(l => !['m','s','r'].includes(l));
+const kentGemiddeld = gem(kentLijst);
+const kentNietGem = gem(nietLijst);
+
+function toets(naam, gehaald, uitleg) {
+  zeg(`${gehaald ? '  GOED  ' : '  MIS   '} ${naam}\n          ${uitleg}`);
+  return gehaald;
+}
+
+zeg(`${BEURTEN} beurten. Kent m/s/r goed, gokt v/a/i/o/e/l/n.\n`);
+zeg(`treffers totaal      : ${pctTotaal}%`);
+zeg(`treffers laatste 100 : ${pctEind}%   (mikpunt ~85%)`);
+zeg(`keuzes per vraag     : ${JSON.stringify(keuzesTelling)}`);
+zeg(`letters in omloop    : ${s.actief.length} (${s.actief.join(' ')}), hoogste ooit ${maxActief}`);
+zeg(`verwarrende afleiders: ${s.verwarrend ? 'aan' : 'uit'}`);
+zeg(`verveelrem ging af   : ${verveeld}×`);
+zeg(`frustratierem ging af: ${gefrustreerd}×`);
+zeg(`directe herhalingen  : ${herhalingen}`);
+zeg(`kans per beurt — kent ze     : ${(kentGemiddeld*100).toFixed(1)}%`);
+zeg(`kans per beurt — kent ze niet: ${(kentNietGem*100).toFixed(1)}%   (moet hoger zijn)\n`);
+
+let alles = true;
+alles &= toets('blijft in de buurt van het mikpunt', pctEind >= 70 && pctEind <= 93,
+  `${pctEind}% ligt tussen 70 en 93 — niet te makkelijk, niet te moeilijk`);
+alles &= toets('nooit meer dan 6 letters tegelijk', maxActief <= cfg.letters.max_actief,
+  `hoogste was ${maxActief}, grens is ${cfg.letters.max_actief}`);
+alles &= toets('moeilijkheid is echt gestegen', (keuzesTelling[3] || 0) + (keuzesTelling[4] || 0) > 0,
+  `er zijn vragen met 3 of 4 keuzes gesteld, niet alleen met 2`);
+alles &= toets('zwakke letters komen vaker aan de beurt', kentNietGem > kentGemiddeld,
+  `${(kentNietGem*100).toFixed(1)}% tegen ${(kentGemiddeld*100).toFixed(1)}% per beurt in omloop`);
+alles &= toets('elke fout kreeg een makkelijkere herkansing', herhalingen > 0,
+  `${herhalingen} directe herhalingen`);
+alles &= toets('de remmen doen mee', verveeld + gefrustreerd > 0,
+  `verveling ${verveeld}×, frustratie ${gefrustreerd}×`);
+
+zeg(`\n${alles ? 'ALLE TOETSEN GOED' : 'ER IS IETS MIS'}`);
+
+document.getElementById('uit').innerHTML = regels.join('\n')
+  .replace(/GOED/g, '<span class="goed">GOED</span>')
+  .replace(/MIS(?!\s*$)/g, '<span class="mis">MIS</span>');
+window.__uitslag = { pctEind, maxActief, keuzesTelling, verveeld, gefrustreerd, herhalingen, alles: !!alles };
+</script>
+</body>
+</html>
