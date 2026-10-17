@@ -14,13 +14,13 @@ Speelbaar. Na het kiezen van een figuurtje: een startmenu met **Lezen** (klanken
 cijfers 0 tot 9 schrijven met de vinger in vier niveaus). Streken: `data/schrijven.json`; cijfers:
 `data/cijfers.json`. De opnamestudio (ouder.html) bevat ook de cijferwoorden en de namen.
 
-**Tekenen**: het konijn stap voor stap (hoofd, oren naar keuze van Ida: een lang + een slap, twee lange
+**Tekenen**: zon, konijn, huisje, boom, vis en egel (met stekels als streepjes, zoals het cijfer 1). Het konijn stap voor stap (hoofd, oren naar keuze van Ida: een lang + een slap, twee lange
 of twee slappe; gezicht, lijf, pootjes, staart) in vier hulpniveaus, daarna inkleuren (tik een vlak,
 6 kleuren) en **vrij tekenen** (kleuren, laatste streek weg, alles weg). Figuren staan in
 `data/tekenen.json`; een nieuwe figuur toevoegen = daar een blok bijzetten.
 De aanwijzingen ("Eerst het hoofd...") staan ook in de opnamestudio.
 
-Nog te doen: meer figuren (egel, huisje, zon, vis, poes...), hoofdletters. `?niveau=1..4` in het
+Nog te doen: meer figuren (poes, muis, auto, mannetje, vlinder...), hoofdletters. `?niveau=1..4` in het
 adres zet het hulpniveau van schrijven en tekenen vast.
 
 ## Lokaal draaien

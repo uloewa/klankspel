@@ -20,6 +20,92 @@
   "#D9A5B3"
  ],
  "figuren": {
+  "zon": {
+   "titel": "zon",
+   "stappen": [
+    {
+     "wat": "de zon",
+     "zeg": "Eerst de zon. Een mooie ronde cirkel.",
+     "d": "M50 48 A22 22 0 0 0 50 92 A22 22 0 0 0 50 48 Z",
+     "vul": true,
+     "id": "teken_zon_0"
+    },
+    {
+     "wat": "het linkeroog",
+     "zeg": "Een oogje. Tik maar.",
+     "tap": [
+      43,
+      66
+     ],
+     "r": 3,
+     "id": "teken_zon_1"
+    },
+    {
+     "wat": "het rechteroog",
+     "zeg": "En nog een oogje.",
+     "tap": [
+      57,
+      66
+     ],
+     "r": 3,
+     "id": "teken_zon_2"
+    },
+    {
+     "wat": "de mond",
+     "zeg": "En een grote glimlach.",
+     "d": "M42 76 C46 82 54 82 58 76",
+     "id": "teken_zon_3"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "Nu de stralen. Eerst een streepje naar boven.",
+     "d": "M50 40 L50 26",
+     "id": "teken_zon_4"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "Een streepje naar rechts.",
+     "d": "M72 70 L86 70",
+     "id": "teken_zon_5"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "Een streepje naar beneden.",
+     "d": "M50 100 L50 114",
+     "id": "teken_zon_6"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "Een streepje naar links.",
+     "d": "M28 70 L14 70",
+     "id": "teken_zon_7"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "Nu schuin, naar rechtsboven.",
+     "d": "M66 54 L76 44",
+     "id": "teken_zon_8"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "Schuin naar rechtsonder.",
+     "d": "M66 86 L76 96",
+     "id": "teken_zon_9"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "Schuin naar linksonder.",
+     "d": "M34 86 L24 96",
+     "id": "teken_zon_10"
+    },
+    {
+     "wat": "een straal",
+     "zeg": "En schuin naar linksboven.",
+     "d": "M34 54 L24 44",
+     "id": "teken_zon_11"
+    }
+   ]
+  },
   "konijn": {
    "titel": "konijn",
    "oren_keuze": {
@@ -154,6 +240,195 @@
      "d": "M78 106 A6 6 0 0 0 78 118 A6 6 0 0 0 78 106 Z",
      "vul": true,
      "id": "teken_konijn_10"
+    }
+   ]
+  },
+  "huisje": {
+   "titel": "huisje",
+   "stappen": [
+    {
+     "wat": "de muur",
+     "zeg": "Eerst de muur. Een vierkant.",
+     "d": "M26 70 L74 70 L74 118 L26 118 Z",
+     "vul": true,
+     "id": "teken_huisje_0"
+    },
+    {
+     "wat": "het dak",
+     "zeg": "Nu het dak. Een driehoek bovenop.",
+     "d": "M20 70 L50 38 L80 70 Z",
+     "vul": true,
+     "id": "teken_huisje_1"
+    },
+    {
+     "wat": "de deur",
+     "zeg": "Een deur, onderaan.",
+     "d": "M54 118 L54 94 L66 94 L66 118 Z",
+     "vul": true,
+     "id": "teken_huisje_2"
+    },
+    {
+     "wat": "het raam",
+     "zeg": "En een raam.",
+     "d": "M32 80 L42 80 L42 90 L32 90 Z",
+     "vul": true,
+     "id": "teken_huisje_3"
+    }
+   ]
+  },
+  "boom": {
+   "titel": "boom",
+   "stappen": [
+    {
+     "wat": "de kruin",
+     "zeg": "Eerst de kruin van de boom. Een grote ronde cirkel.",
+     "d": "M50 38 A28 28 0 0 0 50 94 A28 28 0 0 0 50 38 Z",
+     "vul": true,
+     "id": "teken_boom_0"
+    },
+    {
+     "wat": "de stam",
+     "zeg": "Nu de stam. Een rechte, dikke stam.",
+     "d": "M44 94 L44 124 L56 124 L56 94 Z",
+     "vul": true,
+     "id": "teken_boom_1"
+    },
+    {
+     "wat": "de grond",
+     "zeg": "En de grond waar de boom op staat.",
+     "d": "M20 124 L80 124",
+     "id": "teken_boom_2"
+    }
+   ]
+  },
+  "vis": {
+   "titel": "vis",
+   "stappen": [
+    {
+     "wat": "het lijf",
+     "zeg": "Eerst het lijf van de vis. Een lange ovaal.",
+     "d": "M46 57 A28 18 0 0 0 46 93 A28 18 0 0 0 46 57 Z",
+     "vul": true,
+     "id": "teken_vis_0"
+    },
+    {
+     "wat": "de staart",
+     "zeg": "Nu de staart. Een driehoek.",
+     "d": "M72 75 L92 60 L92 90 Z",
+     "vul": true,
+     "id": "teken_vis_1"
+    },
+    {
+     "wat": "het oog",
+     "zeg": "Een oogje. Tik maar.",
+     "tap": [
+      30,
+      70
+     ],
+     "r": 3,
+     "id": "teken_vis_2"
+    },
+    {
+     "wat": "de vin",
+     "zeg": "En een vin onderaan.",
+     "d": "M46 93 L40 106 L58 95 Z",
+     "vul": true,
+     "id": "teken_vis_3"
+    }
+   ]
+  },
+  "egel": {
+   "titel": "egel",
+   "stappen": [
+    {
+     "wat": "het lijf",
+     "zeg": "Eerst het lijf van de egel. Een dikke ovaal.",
+     "d": "M50 63 A30 22 0 0 0 50 107 A30 22 0 0 0 50 63 Z",
+     "vul": true,
+     "id": "teken_egel_0"
+    },
+    {
+     "wat": "de snuit",
+     "zeg": "Nu de snuit. Een klein rondje links.",
+     "d": "M20 83 A9 9 0 0 0 20 101 A9 9 0 0 0 20 83 Z",
+     "vul": true,
+     "id": "teken_egel_1"
+    },
+    {
+     "wat": "het oog",
+     "zeg": "Een oogje. Tik maar.",
+     "tap": [
+      24,
+      89
+     ],
+     "r": 2.5,
+     "id": "teken_egel_2"
+    },
+    {
+     "wat": "de neus",
+     "zeg": "En een neusje vooraan.",
+     "tap": [
+      12,
+      93
+     ],
+     "r": 2.5,
+     "id": "teken_egel_3"
+    },
+    {
+     "wat": "een stekel",
+     "zeg": "Nu de stekels. Een streepje, zoals het cijfer een. Doe er veel!",
+     "d": "M27 71 L18 61",
+     "id": "teken_egel_4"
+    },
+    {
+     "wat": "een stekel",
+     "zeg": "Nog een stekel.",
+     "d": "M35 66 L30 54",
+     "id": "teken_egel_5"
+    },
+    {
+     "wat": "een stekel",
+     "zeg": "Nog een stekel.",
+     "d": "M45 63 L43 50",
+     "id": "teken_egel_6"
+    },
+    {
+     "wat": "een stekel",
+     "zeg": "Nog een stekel.",
+     "d": "M55 63 L57 50",
+     "id": "teken_egel_7"
+    },
+    {
+     "wat": "een stekel",
+     "zeg": "Nog een stekel.",
+     "d": "M65 66 L70 54",
+     "id": "teken_egel_8"
+    },
+    {
+     "wat": "een stekel",
+     "zeg": "Nog een stekel.",
+     "d": "M73 71 L82 61",
+     "id": "teken_egel_9"
+    },
+    {
+     "wat": "een stekel",
+     "zeg": "Nog een stekel.",
+     "d": "M78 77 L90 72",
+     "id": "teken_egel_10"
+    },
+    {
+     "wat": "de linkervoet",
+     "zeg": "Een voetje, een klein rondje.",
+     "d": "M36 107 A5 5 0 0 0 36 117 A5 5 0 0 0 36 107 Z",
+     "vul": true,
+     "id": "teken_egel_11"
+    },
+    {
+     "wat": "de rechtervoet",
+     "zeg": "En nog een voetje.",
+     "d": "M62 107 A5 5 0 0 0 62 117 A5 5 0 0 0 62 107 Z",
+     "vul": true,
+     "id": "teken_egel_12"
     }
    ]
   }

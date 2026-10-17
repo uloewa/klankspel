@@ -69,7 +69,7 @@ export async function laadLijst(basis = DATA) {
 
   /* De aanwijzingen bij het tekenen: elke stap een zinnetje, ook voor elke ooropstelling. */
   for (const [fid, f] of Object.entries(tekenen.figuren)) {
-    const stappen = [...f.stappen.filter(x => x.zeg), ...Object.values(f.oren).flat()];
+    const stappen = [...f.stappen.filter(x => x.zeg), ...Object.values(f.oren || {}).flat()];
     for (const st of stappen) {
       uit.push({
         id: st.id,
