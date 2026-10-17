@@ -1,25 +1,237 @@
 {
-  "_lees_dit_eerst": [
-    "De letters die Ida met de vinger leert schrijven. Kleine letters, want zo schrijft ze haar",
-    "naam zelf met de balpen: ida, de i met het bolletje.",
-    "",
-    "Elk schrijfvlak is 100 breed en 140 hoog. Een streek is een pad ('d', SVG-syntaxis) of een",
-    "tik ('tap': [x, y]) -- het bolletje van de i is een tik, geen lijn.",
-    "Streken staan in schrijfrichting: waar de pen begint, staat het eerste punt van het pad.",
-    "",
-    "Een letter toevoegen = hier een regel bijzetten en de letter in 'volgorde' zetten.",
-    "De tolerantie is de ruimte (in dezelfde eenheden) waarbinnen haar vinger mag afwijken.",
-    "Dat is een beginwaarde: kleuters missen kleine doelen op een scherm, dus ruim.",
-    "Per niveau iets strenger: 1 kijk en volg, 2 pijl en stippen, 3 alleen het startpunt, 4 zelf."
-  ],
-  "tolerantie": { "1": 15, "2": 14, "3": 13, "4": 12 },
-  "volgorde": ["i", "d", "a"],
-  "namen": [
-    { "naam": "ida", "letters": ["i", "d", "a"] }
-  ],
-  "letters": {
-    "i": { "streken": [ { "d": "M50 62 L50 118" }, { "tap": [50, 32] } ] },
-    "d": { "streken": [ { "d": "M68 66 C50 50 24 62 24 90 C24 118 54 126 68 108" }, { "d": "M68 22 L68 118" } ] },
-    "a": { "streken": [ { "d": "M68 66 C50 50 24 62 24 90 C24 118 54 126 68 108" }, { "d": "M68 60 L68 118" } ] }
+ "_lees_dit_eerst": [
+  "De letters die Ida met de vinger leert schrijven. Kleine letters, want zo schrijft ze haar",
+  "naam zelf met de balpen: ida, de i met het bolletje.",
+  "",
+  "Elk schrijfvlak is 100 breed en 140 hoog. Een streek is een pad ('d', SVG-syntaxis) of een",
+  "tik ('tap': [x, y]) -- het bolletje van de i is een tik, geen lijn.",
+  "Streken staan in schrijfrichting: waar de pen begint, staat het eerste punt van het pad.",
+  "",
+  "Een letter toevoegen = hier een regel bijzetten en de letter in 'volgorde' zetten.",
+  "De tolerantie is de ruimte (in dezelfde eenheden) waarbinnen haar vinger mag afwijken.",
+  "Dat is een beginwaarde: kleuters missen kleine doelen op een scherm, dus ruim.",
+  "Per niveau iets strenger: 1 kijk en volg, 2 pijl en stippen, 3 alleen het startpunt, 4 zelf.",
+  "Cijfers staan onder 'cijfers' (volgorde in 'cijfervolgorde'): zelfde streken, zelfde motor."
+ ],
+ "tolerantie": {
+  "1": 15,
+  "2": 14,
+  "3": 13,
+  "4": 12
+ },
+ "volgorde": [
+  "i",
+  "d",
+  "a",
+  "t",
+  "h",
+  "j",
+  "s",
+  "r"
+ ],
+ "namen": [
+  {
+   "naam": "ida",
+   "letters": [
+    "i",
+    "d",
+    "a"
+   ]
+  },
+  {
+   "naam": "sarah",
+   "letters": [
+    "s",
+    "a",
+    "r",
+    "a",
+    "h"
+   ]
+  },
+  {
+   "naam": "thijs",
+   "letters": [
+    "t",
+    "h",
+    "i",
+    "j",
+    "s"
+   ]
   }
+ ],
+ "letters": {
+  "i": {
+   "streken": [
+    {
+     "d": "M50 62 L50 118"
+    },
+    {
+     "tap": [
+      50,
+      32
+     ]
+    }
+   ]
+  },
+  "d": {
+   "streken": [
+    {
+     "d": "M68 66 C50 50 24 62 24 90 C24 118 54 126 68 108"
+    },
+    {
+     "d": "M68 22 L68 118"
+    }
+   ]
+  },
+  "a": {
+   "streken": [
+    {
+     "d": "M68 66 C50 50 24 62 24 90 C24 118 54 126 68 108"
+    },
+    {
+     "d": "M68 60 L68 118"
+    }
+   ]
+  },
+  "t": {
+   "streken": [
+    {
+     "d": "M46 26 L46 100 C46 114 56 120 70 114"
+    },
+    {
+     "d": "M26 62 L68 62"
+    }
+   ]
+  },
+  "h": {
+   "streken": [
+    {
+     "d": "M30 22 L30 118"
+    },
+    {
+     "d": "M30 84 C34 62 74 56 74 84 L74 118"
+    }
+   ]
+  },
+  "j": {
+   "streken": [
+    {
+     "d": "M56 62 L56 118 C56 134 40 138 28 130"
+    },
+    {
+     "tap": [
+      56,
+      32
+     ]
+    }
+   ]
+  },
+  "s": {
+   "streken": [
+    {
+     "d": "M68 70 C58 56 30 58 32 76 C34 92 70 90 70 106 C70 126 40 124 28 108"
+    }
+   ]
+  },
+  "r": {
+   "streken": [
+    {
+     "d": "M34 62 L34 118"
+    },
+    {
+     "d": "M34 86 C38 62 62 58 74 66"
+    }
+   ]
+  }
+ },
+ "cijfervolgorde": [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "0"
+ ],
+ "cijfers": {
+  "1": {
+   "streken": [
+    {
+     "d": "M36 46 L54 28 L54 118"
+    }
+   ]
+  },
+  "2": {
+   "streken": [
+    {
+     "d": "M28 56 C28 28 76 24 74 56 C72 78 38 96 26 118 L76 118"
+    }
+   ]
+  },
+  "3": {
+   "streken": [
+    {
+     "d": "M28 40 C40 22 74 28 70 52 C68 66 50 70 44 70 C64 70 76 82 72 98 C68 122 34 126 26 104"
+    }
+   ]
+  },
+  "4": {
+   "streken": [
+    {
+     "d": "M62 24 L24 90 L80 90"
+    },
+    {
+     "d": "M62 24 L62 118"
+    }
+   ]
+  },
+  "5": {
+   "streken": [
+    {
+     "d": "M72 26 L34 26 L30 68 C50 56 76 66 76 92 C76 122 40 128 24 108"
+    }
+   ]
+  },
+  "6": {
+   "streken": [
+    {
+     "d": "M66 26 C40 40 26 70 26 94 C26 128 74 128 74 98 C74 70 32 68 26 94"
+    }
+   ]
+  },
+  "7": {
+   "streken": [
+    {
+     "d": "M26 28 L76 28 L44 118"
+    }
+   ]
+  },
+  "8": {
+   "streken": [
+    {
+     "d": "M50 70 C26 62 28 28 50 28 C72 28 74 62 50 70 C24 78 24 120 50 120 C76 120 76 78 50 70"
+    }
+   ]
+  },
+  "9": {
+   "streken": [
+    {
+     "d": "M72 58 C72 30 28 30 28 56 C28 82 72 84 72 58"
+    },
+    {
+     "d": "M72 58 L72 118"
+    }
+   ]
+  },
+  "0": {
+   "streken": [
+    {
+     "d": "M50 26 C20 26 22 118 50 118 C78 118 80 26 50 26"
+    }
+   ]
+  }
+ }
 }

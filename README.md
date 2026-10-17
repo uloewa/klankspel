@@ -8,13 +8,14 @@ voortgang van het kind — blijft op het toestel zelf en komt hier nooit in.
 
 ## Stand van zaken
 
-Speelbaar. Na het kiezen van een figuurtje: een startmenu met **Lezen** (klanken, woorden, namen)
-en **Schrijven** (haar naam bouwen uit losse letters, en de letters i, d, a schrijven met de
-vinger in vier niveaus). De streken staan in `data/schrijven.json`.
+Speelbaar. Na het kiezen van een figuurtje: een startmenu met **Lezen** (klanken, woorden, namen),
+**Cijfers** (getal horen, evenveel sterren zien, cijfer kiezen; begint bij 1-2-3, nul als laatste) en
+**Schrijven** (de namen ida, sarah en thijs bouwen uit losse letters; letters i d a t h j s r en de
+cijfers 0 tot 9 schrijven met de vinger in vier niveaus). Streken: `data/schrijven.json`; cijfers:
+`data/cijfers.json`. De opnamestudio (ouder.html) bevat ook de cijferwoorden en de namen.
 
-Nog te doen: cijfers lezen (0 tot 10, met hoeveelheden), cijfers schrijven, meer letters, en later
-tekenen (konijn eerst, dan figuurtjes uit bouwstenen). `?niveau=1..4` in het adres zet het
-schrijfniveau vast, om elk niveau te kunnen proberen.
+Nog te doen: meer letters, hoofdletters, en later tekenen (konijn eerst, dan figuurtjes uit
+bouwstenen). `?niveau=1..4` in het adres zet het schrijfniveau vast.
 
 ## Lokaal draaien
 

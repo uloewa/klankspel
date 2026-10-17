@@ -182,9 +182,10 @@
   body[data-scherm="menu"] #terug,body[data-scherm="schrijfkies"] #terug,
   body[data-scherm="naam"] #terug,body[data-scherm="schrijf"] #terug{display:grid}
 
-  #sk-rij{display:flex;flex-wrap:wrap;gap:clamp(.8rem,3vw,1.6rem);justify-content:center;align-items:center;width:min(100%,50rem)}
-  #sk-rij .kaart-letter{--kaartmaat:min(26vw,24vh,190px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55)}
-  #sk-rij .kaart-letter.naamkaart{flex:0 0 min(70vw,34rem);width:min(70vw,34rem);margin-inline:calc((100% - min(70vw,34rem)) / 2);height:min(24vw,16vh,150px);font-size:min(14vw,10vh,5rem);letter-spacing:.12em}
+  #sk-rij{display:flex;flex-wrap:wrap;gap:clamp(.6rem,2vw,1.2rem);justify-content:center;align-items:center;width:min(100%,50rem)}
+  #sk-rij .kaart-letter{--kaartmaat:min(15vw,15vh,120px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55)}
+  #sk-rij .kaart-letter.naamkaart{flex:0 0 auto;width:min(28vw,15rem);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .45);letter-spacing:.08em;margin-inline:0}
+  #sk-rij .kaart-letter.naamkaart + .kaart-letter:not(.naamkaart){margin-left:0}
 
   #sch-rij{display:flex;gap:clamp(.8rem,3vw,2rem);align-items:center;justify-content:center;flex-wrap:wrap}
   #sch-host{aspect-ratio:5/7;height:min(64vh,calc(86vw * 1.4));background:var(--kaart);border:2px solid var(--kaart-diep);
@@ -705,11 +706,11 @@ function naarSchrijfKies() {
     b.onclick = () => startNaam(n);
     rij.appendChild(b);
   }
-  for (const l of schrijfData.volgorde) {
+  for (const l of schrijfData.volgorde.concat(schrijfData.cijfervolgorde)) {
     const b = document.createElement('button');
     b.className = 'kaart-letter' + (Voortgang.lees(l).beheerst ? ' juist' : '');
     b.textContent = l;
-    b.setAttribute('aria-label', 'schrijf de letter ' + l);
+    b.setAttribute('aria-label', (schrijfData.cijfers[l] ? 'schrijf het cijfer ' : 'schrijf de letter ') + l);
     b.onclick = () => startLetter(l);
     rij.appendChild(b);
   }
@@ -735,6 +736,11 @@ function startNaam(n) {
 
 /* Niveau: de voortgang van dit kind bepaalt het. ?niveau=1..4 in het adres zet het vast,
    zodat ik elk niveau kan uitproberen zonder eerst alles te halen. */
+/* Een letter zegt zijn klank, een cijfer zijn getal: dezelfde stem, andere opname. */
+const zegTeken = (l, o) => schrijfData.cijfers[l]
+  ? Zeg.zeg('c' + l, Cijfers.woord(+l), o)
+  : Zeg.zeg(l, klankAlle[l], o);
+
 function startLetter(l) {
   stopAlles();
   const v = Voortgang.lees(l);
@@ -748,7 +754,7 @@ function startLetter(l) {
   $('sch-verder').onclick = naarSchrijfKies;
   scherm('schrijf');
   vlak = schrijfvlak($('sch-host'), {
-    streken: schrijfData.letters[l].streken,
+    streken: (schrijfData.letters[l] || schrijfData.cijfers[l]).streken,
     niveau,
     tolerantie: schrijfData.tolerantie,
     onMis: () => {
@@ -764,11 +770,11 @@ function startLetter(l) {
         Log.boek('schrijf', { letter: l, niveau, missen: misCount });
       }
       await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
-      await Zeg.zeg(l, klankAlle[l], { wacht: true });
+      await zegTeken(l, { wacht: true });
       $('sch-verder').hidden = false;
     }
   });
-  Zeg.zeg(l, klankAlle[l]);              // ze hoort eerst welke klank het is
+  zegTeken(l);                           // ze hoort eerst welke klank het is
 }
 
 /* ---- opstarten ---- */
