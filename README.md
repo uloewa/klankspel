@@ -8,8 +8,13 @@ voortgang van het kind — blijft op het toestel zelf en komt hier nooit in.
 
 ## Stand van zaken
 
-Skelet. Eén scherm dat toont of de app als app geopend is, of het offline-geheugen werkt en of
-er verbinding is. Nog geen spel.
+Speelbaar. Na het kiezen van een figuurtje: een startmenu met **Lezen** (klanken, woorden, namen)
+en **Schrijven** (haar naam bouwen uit losse letters, en de letters i, d, a schrijven met de
+vinger in vier niveaus). De streken staan in `data/schrijven.json`.
+
+Nog te doen: cijfers lezen (0 tot 10, met hoeveelheden), cijfers schrijven, meer letters, en later
+tekenen (konijn eerst, dan figuurtjes uit bouwstenen). `?niveau=1..4` in het adres zet het
+schrijfniveau vast, om elk niveau te kunnen proberen.
 
 ## Lokaal draaien
 

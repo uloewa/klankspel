@@ -147,11 +147,73 @@
       linear-gradient(var(--vriend),var(--vriend)) bottom/100% 10px no-repeat,
       var(--papier);
   }
+
+  /* ---------- startmenu, schrijven en naam bouwen ---------- */
+  #menu-plek .vriendje{height:clamp(70px,14vh,120px);width:auto}
+  #menu-tegels{display:flex;gap:clamp(1rem,4vw,2.4rem);justify-content:center;width:min(100%,46rem)}
+  .tegel-menu{
+    flex:1;max-width:20rem;aspect-ratio:1/1;border:2px solid var(--kaart-diep);border-radius:var(--rond-kaart);
+    background:var(--kaart);box-shadow:0 var(--dikte) 0 var(--kaart-diep);cursor:pointer;
+    display:grid;place-items:center;padding:1rem;font-family:inherit;
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .tegel-menu:active{transform:translateY(4px);box-shadow:0 1px 0 var(--kaart-diep)}
+  .tegel-menu svg{width:78%;height:auto}
+
+  /* Eén terugknop voor alle diepere schermen; hij staat links, de ouderpoort rechts. */
+  #terug{
+    position:fixed;z-index:9;display:none;
+    top:calc(env(safe-area-inset-top, 0px) + 12px);left:calc(env(safe-area-inset-left, 0px) + 8px);
+    width:var(--raak-min);height:var(--raak-min);border-radius:var(--rond-knop);cursor:pointer;
+    border:2px solid var(--kaart-diep);background:var(--kaart);box-shadow:0 4px 0 var(--kaart-diep);
+    place-items:center;padding:0;
+  }
+  #terug:active{transform:translateY(3px);box-shadow:0 1px 0 var(--kaart-diep)}
+  #terug svg{width:48%;height:48%;fill:var(--zacht)}
+  body[data-scherm="menu"] #terug,body[data-scherm="schrijfkies"] #terug,
+  body[data-scherm="naam"] #terug,body[data-scherm="schrijf"] #terug{display:grid}
+
+  #sk-rij{display:flex;flex-wrap:wrap;gap:clamp(.8rem,3vw,1.6rem);justify-content:center;align-items:center;width:min(100%,50rem)}
+  #sk-rij .kaart-letter{--kaartmaat:min(26vw,24vh,190px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55)}
+  #sk-rij .kaart-letter.naamkaart{flex:0 0 min(70vw,34rem);width:min(70vw,34rem);margin-inline:calc((100% - min(70vw,34rem)) / 2);height:min(24vw,16vh,150px);font-size:min(14vw,10vh,5rem);letter-spacing:.12em}
+
+  #sch-rij{display:flex;gap:clamp(.8rem,3vw,2rem);align-items:center;justify-content:center;flex-wrap:wrap}
+  #sch-host{aspect-ratio:5/7;height:min(64vh,calc(86vw * 1.4));background:var(--kaart);border:2px solid var(--kaart-diep);
+    border-radius:var(--rond-kaart);box-shadow:0 var(--dikte) 0 var(--kaart-diep);padding:.4rem}
+  .schrijf-svg{width:100%;height:100%;touch-action:none;display:block}
+  .schrijf-svg .vervaag{transition:opacity .9s ease}
+  .schrijf-svg .puls{animation:puls 1s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes puls{50%{transform:scale(1.35)}}
+  #sch-zij{display:flex;flex-direction:column;align-items:center;gap:1rem}
+  #sch-zij .vriendje{height:clamp(70px,14vh,120px);width:auto}
+  #sch-ref{--kaartmaat:min(22vw,14vh,110px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .6);cursor:default}
+  #sch-ref[hidden],#sch-zij .knop-verder[hidden]{display:none}   /* display:grid van de klasse wint anders van [hidden] */
+
+  #naam-vriend .vriendje{height:clamp(70px,14vh,120px);width:auto}
+  .naam-plekken,.naam-tegels{display:flex;gap:clamp(.6rem,2.4vw,1.4rem);justify-content:center}
+  .naam-plek,.naam-tegel{width:min(24vw,20vh,150px);height:min(30vw,25vh,188px);border-radius:var(--rond-kaart)}
+  .naam-plek{border:4px dashed var(--kaart-diep);transition:background .2s ease}
+  .naam-plek.vol{border-style:solid;border-color:var(--goed);background:rgba(63,125,92,.12)}
+  .naam-tegel{
+    display:grid;place-items:center;font-weight:700;font-size:min(16vw,13vh,6rem);color:#fff;
+    background:var(--vriend);border:2px solid var(--vriend-diep);box-shadow:0 var(--dikte) 0 var(--vriend-diep);
+    touch-action:none;cursor:grab;position:relative;z-index:2;
+  }
+  .naam-tegel.sleep{transition:none;cursor:grabbing;z-index:5}
+  .naam-tegel.terug{transition:transform .35s ease}
+  .naam-tegel.keuze{outline:5px solid #E9B949;outline-offset:4px}
+  .naam-tegel.klaar{background:var(--goed);border-color:var(--goed);box-shadow:none;cursor:default}
+  #naam-host{display:flex;flex-direction:column;gap:clamp(1.2rem,5vh,2.6rem);align-items:center}
+  @media (prefers-reduced-motion: reduce){
+    .schrijf-svg .puls{animation:none}
+    .naam-tegel.terug,.naam-tegel.klaar{transition:none}
+  }
 </style>
 </head>
 <body>
 
 <button id="ouderpoort" aria-label="Ouderscherm — houd drie seconden ingedrukt"></button>
+<button id="terug" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg></button>
 
 <!-- 1. wie speelt er vandaag mee? Tikken op een figuurtje start meteen het spel:
      evenveel tikken als een startknop, maar zij kiest. -->
@@ -183,29 +245,73 @@
   <div id="eind-plek"></div>
 </div>
 
+<!-- 1b. startmenu: lezen of schrijven. Geen woorden, want ze kan nog niet lezen. -->
+<div class="scherm" id="s-menu">
+  <div id="menu-plek"></div>
+  <div id="menu-tegels">
+    <button class="tegel-menu" id="m-lezen" aria-label="Lezen">
+      <svg viewBox="0 0 100 80" aria-hidden="true"><rect x="8" y="12" width="84" height="58" rx="8" fill="#fff" stroke="#E0D2BB" stroke-width="3"/><text x="50" y="55" text-anchor="middle" font-family="Andika" font-weight="700" font-size="40" fill="#2E2A26">m a</text><circle cx="78" cy="22" r="9" fill="#E8956B"/></svg>
+    </button>
+    <button class="tegel-menu" id="m-schrijven" aria-label="Schrijven">
+      <svg viewBox="0 0 100 80" aria-hidden="true"><path d="M14 66 L24 40 L72 12 L84 24 L40 56 Z" fill="#E9B949" stroke="#C9822F" stroke-width="3" stroke-linejoin="round"/><path d="M14 66 L24 40 L40 56 Z" fill="#F6EBD9" stroke="#C9822F" stroke-width="3" stroke-linejoin="round"/><path d="M18 72 C34 62 40 76 56 68 S78 66 90 70" stroke="#E8956B" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- 5. schrijven: haar naam bouwen of een letter schrijven -->
+<div class="scherm" id="s-schrijfkies">
+  <div id="sk-rij"></div>
+</div>
+
+<!-- 6. naam bouwen -->
+<div class="scherm" id="s-naam">
+  <div id="naam-vriend"></div>
+  <div id="naam-host"></div>
+</div>
+
+<!-- 7. een letter schrijven -->
+<div class="scherm" id="s-schrijf">
+  <div id="sch-rij">
+    <div id="sch-host"></div>
+    <div id="sch-zij">
+      <div id="sch-vriend"></div>
+      <div class="kaart-letter" id="sch-ref" hidden></div>
+      <button class="knop-verder" id="sch-verder" aria-label="Verder" hidden>
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { Zeg }   from './js/zeg.js';
 import { Log }   from './js/log.js';
 import { Motor } from './js/motor.js';
 import { laadFiguren, tekenFiguur, figuur, Gekozen, MONDEN } from './js/figuren.js';
 import { Familie } from './js/familie.js';
+import { schrijfvlak, Voortgang } from './js/schrijf.js';
+import { naamBouwer } from './js/naam.js';
 
 /* Stand 1, nu met de meegroei-motor: de motor kiest welke letter aan de beurt is en
    hoeveel keuzes erbij horen. Alles wat een drempel is, staat in data/motor.json. */
 
-let klankVan = {};                 // id -> wat de computerstem zegt als er geen opname is
+let klankVan = {};
+let klankAlle = {};                // alle klanken, ook de nog niet geleerde: voor schrijven en naam bouwen
+let schrijfData = null, vlak = null, bouwer = null, misCount = 0;                 // id -> wat de computerstem zegt als er geen opname is
 let woorden = [];                  // {woord, emoji, begint_met}
 let huidige = null, bezig = false;
 let sessieStart = 0, vraagTijd = 0, gastModus = null, rondeNr = 0, mijnFiguur = 'maatje';
 
 const $ = id => document.getElementById(id);
-const scherm = naam => document.querySelectorAll('.scherm')
-  .forEach(s => s.classList.toggle('aan', s.id === 's-' + naam));
+const scherm = naam => {
+  document.body.dataset.scherm = naam;
+  document.querySelectorAll('.scherm').forEach(s => s.classList.toggle('aan', s.id === 's-' + naam));
+};
 
 /* Werkt voor élk figuurtje: ze delen dezelfde mond en dezelfde klassen. Dat is precies
    waarom ze uit één lichaam met verkleedstukken bestaan. */
-function gezicht(stand) {
-  const m = $('maatje-plek').querySelector('.vriendje');
+function gezicht(stand, plek = 'maatje-plek') {
+  const m = $(plek).querySelector('.vriendje');
   const mond = m && m.querySelector('.mond');
   if (!m || !mond) return;
   m.classList.remove('blij', 'kijkt');
@@ -435,17 +541,29 @@ function klankmuur() {
 async function einde() {
   if (!gastModus) Log.boek('einde');
   $('eind-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'blij', klas: 'vriendje blij' });
+  $('eind-plek').onclick = naarMenu;      // tikken op het figuurtje brengt haar terug bij het menu
   scherm('einde');
   await Zeg.zeg('s3', 'jij hebt goed gewerkt vandaag', { wacht: true });
   await Zeg.zeg('s2', 'we stoppen hier, tot morgen');
 }
 
-async function beginSessie(figuurId) {
+/* Het figuurtje bepaalt wie meespeelt; daarna kiest ze lezen of schrijven. */
+function kiesFiguur(figuurId) {
   mijnFiguur = figuurId;
   Gekozen.zet(figuurId);
+  naarMenu();
+}
+
+function naarMenu() {
+  stopAlles();
+  $('menu-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'blij' });
+  scherm('menu');
+}
+
+async function beginSessie() {
   $('maatje-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'rustig' });
   sessieStart = Date.now();
-  if (!gastModus) Log.boek('start', { figuur: figuurId });
+  if (!gastModus) Log.boek('start', { figuur: mijnFiguur });
   await Zeg.zeg('s1', 'dag, zullen we luisteren?', { wacht: true });
   ronde();
 }
@@ -464,9 +582,107 @@ async function bouwKiezers() {
     b.setAttribute('aria-label', 'speel met ' + f.naam);
     b.className = f.id === vorige ? 'gekozen' : '';
     b.innerHTML = tekenFiguur(f.id, { mond: 'blij' });
-    b.onclick = () => beginSessie(f.id);
+    b.onclick = () => kiesFiguur(f.id);
     veld.appendChild(b);
   }
+}
+
+/* ---- schrijven ---- */
+
+const TERUG = { menu: 'start', schrijfkies: 'menu', naam: 'schrijfkies', schrijf: 'schrijfkies' };
+
+function stopAlles() {
+  Zeg.stop();
+  if (vlak) { vlak.stop(); vlak = null; }
+  if (bouwer) { bouwer.stop(); bouwer = null; }
+}
+
+function terugGaan() {
+  const naar = TERUG[document.body.dataset.scherm];
+  stopAlles();
+  if (naar === 'menu') naarMenu();
+  else if (naar === 'schrijfkies') naarSchrijfKies();
+  else scherm('start');
+}
+
+/* Haar naam bovenaan, daaronder de letters die ze kan leren schrijven. Een letter met een
+   groene voet is al zelfstandig gelukt. */
+function naarSchrijfKies() {
+  stopAlles();
+  const rij = $('sk-rij');
+  rij.innerHTML = '';
+  for (const n of schrijfData.namen) {
+    const b = document.createElement('button');
+    b.className = 'kaart-letter naamkaart';
+    b.textContent = n.naam;
+    b.setAttribute('aria-label', 'naam bouwen: ' + n.naam);
+    b.onclick = () => startNaam(n);
+    rij.appendChild(b);
+  }
+  for (const l of schrijfData.volgorde) {
+    const b = document.createElement('button');
+    b.className = 'kaart-letter' + (Voortgang.lees(l).beheerst ? ' juist' : '');
+    b.textContent = l;
+    b.setAttribute('aria-label', 'schrijf de letter ' + l);
+    b.onclick = () => startLetter(l);
+    rij.appendChild(b);
+  }
+  scherm('schrijfkies');
+}
+
+function startNaam(n) {
+  stopAlles();
+  $('naam-vriend').innerHTML = tekenFiguur(mijnFiguur, { mond: 'rustig' });
+  scherm('naam');                        // eerst tonen: de vakjes meten pas als ze zichtbaar zijn
+  bouwer = naamBouwer($('naam-host'), {
+    letters: n.letters,
+    onPlaats: l => Zeg.zeg(l, klankAlle[l]),
+    onNaast: () => gezicht('kijkt', 'naam-vriend'),
+    onKlaar: async () => {
+      gezicht('blij', 'naam-vriend');
+      if (!gastModus) Log.boek('naam', { naam: n.naam });
+      await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+      await Zeg.zeg('naam_' + n.naam, n.naam);
+    }
+  });
+}
+
+/* Niveau: de voortgang van dit kind bepaalt het. ?niveau=1..4 in het adres zet het vast,
+   zodat ik elk niveau kan uitproberen zonder eerst alles te halen. */
+function startLetter(l) {
+  stopAlles();
+  const v = Voortgang.lees(l);
+  const vast = Number(new URLSearchParams(location.search).get('niveau'));
+  const niveau = vast >= 1 && vast <= 4 ? vast : v.niveau;
+  misCount = 0;
+  $('sch-vriend').innerHTML = tekenFiguur(mijnFiguur, { mond: 'rustig' });
+  $('sch-ref').textContent = l;
+  $('sch-ref').hidden = niveau < 4;      // op niveau 4 staat er niets: zo ziet ze welke letter het is
+  $('sch-verder').hidden = true;
+  $('sch-verder').onclick = naarSchrijfKies;
+  scherm('schrijf');
+  vlak = schrijfvlak($('sch-host'), {
+    streken: schrijfData.letters[l].streken,
+    niveau,
+    tolerantie: schrijfData.tolerantie,
+    onMis: () => {
+      misCount++;
+      gezicht('kijkt', 'sch-vriend');
+      setTimeout(() => gezicht('rustig', 'sch-vriend'), 900);
+      if (misCount === 2) Zeg.zeg(troost(), 'goed geprobeerd');
+    },
+    onKlaar: async () => {
+      gezicht('blij', 'sch-vriend');
+      if (!gastModus) {
+        Voortgang.klaar(l, misCount);
+        Log.boek('schrijf', { letter: l, niveau, missen: misCount });
+      }
+      await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+      await Zeg.zeg(l, klankAlle[l], { wacht: true });
+      $('sch-verder').hidden = false;
+    }
+  });
+  Zeg.zeg(l, klankAlle[l]);              // ze hoort eerst welke klank het is
 }
 
 /* ---- opstarten ---- */
@@ -476,6 +692,7 @@ async function bouwKiezers() {
     fetch('./data/woorden.json').then(r => r.json())
   ]);
   woorden = woordData.woorden;
+  klanken.klanken.forEach(k => { klankAlle[k.id] = k.zeg; });
   // De leervolgorde: rekbaar en makkelijk te horen eerst, de verwarrende paren laat.
   const letters = klanken.klanken
     .filter(k => k.start)
@@ -493,7 +710,11 @@ async function bouwKiezers() {
   await Zeg.laad();
 
   await bouwKiezers();
+  schrijfData = await fetch('./data/schrijven.json').then(r => r.json());
   $('luister').onclick = hoorVraag;
+  $('m-lezen').onclick = beginSessie;
+  $('m-schrijven').onclick = naarSchrijfKies;
+  $('terug').onclick = terugGaan;
   $('verder').onclick = () => ronde();
 
   // Weggaan halverwege telt ook als informatie: waar haakte ze af?

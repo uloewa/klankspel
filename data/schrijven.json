@@ -1,0 +1,25 @@
+{
+  "_lees_dit_eerst": [
+    "De letters die Ida met de vinger leert schrijven. Kleine letters, want zo schrijft ze haar",
+    "naam zelf met de balpen: ida, de i met het bolletje.",
+    "",
+    "Elk schrijfvlak is 100 breed en 140 hoog. Een streek is een pad ('d', SVG-syntaxis) of een",
+    "tik ('tap': [x, y]) -- het bolletje van de i is een tik, geen lijn.",
+    "Streken staan in schrijfrichting: waar de pen begint, staat het eerste punt van het pad.",
+    "",
+    "Een letter toevoegen = hier een regel bijzetten en de letter in 'volgorde' zetten.",
+    "De tolerantie is de ruimte (in dezelfde eenheden) waarbinnen haar vinger mag afwijken.",
+    "Dat is een beginwaarde: kleuters missen kleine doelen op een scherm, dus ruim.",
+    "Per niveau iets strenger: 1 kijk en volg, 2 pijl en stippen, 3 alleen het startpunt, 4 zelf."
+  ],
+  "tolerantie": { "1": 15, "2": 14, "3": 13, "4": 12 },
+  "volgorde": ["i", "d", "a"],
+  "namen": [
+    { "naam": "ida", "letters": ["i", "d", "a"] }
+  ],
+  "letters": {
+    "i": { "streken": [ { "d": "M50 62 L50 118" }, { "tap": [50, 32] } ] },
+    "d": { "streken": [ { "d": "M68 66 C50 50 24 62 24 90 C24 118 54 126 68 108" }, { "d": "M68 22 L68 118" } ] },
+    "a": { "streken": [ { "d": "M68 66 C50 50 24 62 24 90 C24 118 54 126 68 108" }, { "d": "M68 60 L68 118" } ] }
+  }
+}
