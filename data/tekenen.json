@@ -431,6 +431,385 @@
      "id": "teken_egel_12"
     }
    ]
+  },
+  "poes": {
+   "titel": "poes",
+   "stappen": [
+    {
+     "wat": "het hoofd",
+     "zeg": "Eerst het hoofd. Een ronde cirkel.",
+     "d": "M50 32 A20 20 0 0 0 50 72 A20 20 0 0 0 50 32 Z",
+     "vul": true,
+     "id": "teken_poes_0"
+    },
+    {
+     "wat": "het linkeroor",
+     "zeg": "Een oor, een puntig driehoekje.",
+     "d": "M33 41 L33 22 L46 33 Z",
+     "vul": true,
+     "id": "teken_poes_1"
+    },
+    {
+     "wat": "het rechteroor",
+     "zeg": "En nog een puntig oor.",
+     "d": "M67 41 L67 22 L54 33 Z",
+     "vul": true,
+     "id": "teken_poes_2"
+    },
+    {
+     "wat": "het linkeroog",
+     "zeg": "Een oogje. Tik maar.",
+     "tap": [
+      43,
+      50
+     ],
+     "r": 3,
+     "id": "teken_poes_3"
+    },
+    {
+     "wat": "het rechteroog",
+     "zeg": "En nog een oogje.",
+     "tap": [
+      57,
+      50
+     ],
+     "r": 3,
+     "id": "teken_poes_4"
+    },
+    {
+     "wat": "de neus",
+     "zeg": "Een neusje.",
+     "tap": [
+      50,
+      57
+     ],
+     "r": 2.5,
+     "id": "teken_poes_5"
+    },
+    {
+     "wat": "de mond",
+     "zeg": "Een lachende mond.",
+     "d": "M44 62 C47 66 53 66 56 62",
+     "id": "teken_poes_6"
+    },
+    {
+     "wat": "een snorhaar",
+     "zeg": "Nu de snorharen. Eerst een streepje.",
+     "d": "M38 58 L22 54",
+     "id": "teken_poes_7"
+    },
+    {
+     "wat": "een snorhaar",
+     "zeg": "Nog een streepje.",
+     "d": "M38 62 L22 64",
+     "id": "teken_poes_8"
+    },
+    {
+     "wat": "een snorhaar",
+     "zeg": "En aan de andere kant.",
+     "d": "M62 58 L78 54",
+     "id": "teken_poes_9"
+    },
+    {
+     "wat": "een snorhaar",
+     "zeg": "Nog een streepje.",
+     "d": "M62 62 L78 64",
+     "id": "teken_poes_10"
+    },
+    {
+     "wat": "het lijf",
+     "zeg": "Nu het lijf. Een dikke cirkel.",
+     "d": "M50 72 A26 26 0 0 0 50 124 A26 26 0 0 0 50 72 Z",
+     "vul": true,
+     "id": "teken_poes_11"
+    },
+    {
+     "wat": "de linkerpoot",
+     "zeg": "Een pootje.",
+     "d": "M38 118 A6 6 0 0 0 38 130 A6 6 0 0 0 38 118 Z",
+     "vul": true,
+     "id": "teken_poes_12"
+    },
+    {
+     "wat": "de rechterpoot",
+     "zeg": "En nog een pootje.",
+     "d": "M62 118 A6 6 0 0 0 62 130 A6 6 0 0 0 62 118 Z",
+     "vul": true,
+     "id": "teken_poes_13"
+    },
+    {
+     "wat": "de staart",
+     "zeg": "Als laatste een lange krullende staart.",
+     "d": "M76 104 C94 100 92 84 84 80",
+     "id": "teken_poes_14"
+    }
+   ]
+  },
+  "muis": {
+   "titel": "muis",
+   "stappen": [
+    {
+     "wat": "het hoofd",
+     "zeg": "Eerst het hoofd. Een ovaal.",
+     "d": "M50 42 A22 18 0 0 0 50 78 A22 18 0 0 0 50 42 Z",
+     "vul": true,
+     "id": "teken_muis_0"
+    },
+    {
+     "wat": "het linkeroor",
+     "zeg": "Een oor, een rond oor.",
+     "d": "M33 34 A9 9 0 0 0 33 52 A9 9 0 0 0 33 34 Z",
+     "vul": true,
+     "id": "teken_muis_1"
+    },
+    {
+     "wat": "het rechteroor",
+     "zeg": "En nog een rond oor.",
+     "d": "M67 34 A9 9 0 0 0 67 52 A9 9 0 0 0 67 34 Z",
+     "vul": true,
+     "id": "teken_muis_2"
+    },
+    {
+     "wat": "het linkeroog",
+     "zeg": "Een oogje. Tik maar.",
+     "tap": [
+      42,
+      57
+     ],
+     "r": 3,
+     "id": "teken_muis_3"
+    },
+    {
+     "wat": "het rechteroog",
+     "zeg": "En nog een oogje.",
+     "tap": [
+      58,
+      57
+     ],
+     "r": 3,
+     "id": "teken_muis_4"
+    },
+    {
+     "wat": "de neus",
+     "zeg": "Een neusje.",
+     "tap": [
+      50,
+      66
+     ],
+     "r": 3,
+     "id": "teken_muis_5"
+    },
+    {
+     "wat": "een snorhaar",
+     "zeg": "Een snorhaar.",
+     "d": "M40 68 L26 66",
+     "id": "teken_muis_6"
+    },
+    {
+     "wat": "een snorhaar",
+     "zeg": "En aan de andere kant.",
+     "d": "M60 68 L74 66",
+     "id": "teken_muis_7"
+    },
+    {
+     "wat": "het lijf",
+     "zeg": "Nu het lijf. Een ovaal.",
+     "d": "M50 82 A22 20 0 0 0 50 122 A22 20 0 0 0 50 82 Z",
+     "vul": true,
+     "id": "teken_muis_8"
+    },
+    {
+     "wat": "de staart",
+     "zeg": "Een lange dunne staart.",
+     "d": "M72 108 C90 108 92 92 86 86",
+     "id": "teken_muis_9"
+    }
+   ]
+  },
+  "auto": {
+   "titel": "auto",
+   "stappen": [
+    {
+     "wat": "de bak",
+     "zeg": "Eerst de auto zelf. Een lange rechthoek.",
+     "d": "M12 76 L88 76 L88 98 L12 98 Z",
+     "vul": true,
+     "id": "teken_auto_0"
+    },
+    {
+     "wat": "de cabine",
+     "zeg": "Nu het dak. Een kleiner stuk bovenop.",
+     "d": "M28 76 L38 56 L64 56 L74 76 Z",
+     "vul": true,
+     "id": "teken_auto_1"
+    },
+    {
+     "wat": "het linkerwiel",
+     "zeg": "Een wiel. Een ronde cirkel.",
+     "d": "M30 91 A9 9 0 0 0 30 109 A9 9 0 0 0 30 91 Z",
+     "vul": true,
+     "id": "teken_auto_2"
+    },
+    {
+     "wat": "het rechterwiel",
+     "zeg": "En nog een wiel.",
+     "d": "M70 91 A9 9 0 0 0 70 109 A9 9 0 0 0 70 91 Z",
+     "vul": true,
+     "id": "teken_auto_3"
+    },
+    {
+     "wat": "het raam",
+     "zeg": "Een raampje.",
+     "d": "M38 74 L44 60 L52 60 L52 74 Z",
+     "vul": true,
+     "id": "teken_auto_4"
+    },
+    {
+     "wat": "het raam",
+     "zeg": "En nog een raampje.",
+     "d": "M56 74 L56 60 L63 60 L69 74 Z",
+     "vul": true,
+     "id": "teken_auto_5"
+    },
+    {
+     "wat": "het lampje",
+     "zeg": "En vooraan een lampje. Tik maar.",
+     "tap": [
+      84,
+      84
+     ],
+     "r": 3,
+     "id": "teken_auto_6"
+    }
+   ]
+  },
+  "mannetje": {
+   "titel": "mannetje",
+   "stappen": [
+    {
+     "wat": "het hoofd",
+     "zeg": "Eerst het bolletje, het hoofd. Net als bij de i.",
+     "d": "M50 20 A14 14 0 0 0 50 48 A14 14 0 0 0 50 20 Z",
+     "vul": true,
+     "id": "teken_mannetje_0"
+    },
+    {
+     "wat": "het lijf",
+     "zeg": "Nu het lijfje. Een ovaal.",
+     "d": "M50 50 A12 20 0 0 0 50 90 A12 20 0 0 0 50 50 Z",
+     "vul": true,
+     "id": "teken_mannetje_1"
+    },
+    {
+     "wat": "de linkerarm",
+     "zeg": "Een arm.",
+     "d": "M38 62 L22 76",
+     "id": "teken_mannetje_2"
+    },
+    {
+     "wat": "de rechterarm",
+     "zeg": "En nog een arm.",
+     "d": "M62 62 L78 76",
+     "id": "teken_mannetje_3"
+    },
+    {
+     "wat": "het linkerbeen",
+     "zeg": "Een been.",
+     "d": "M44 88 L36 122",
+     "id": "teken_mannetje_4"
+    },
+    {
+     "wat": "het rechterbeen",
+     "zeg": "En nog een been.",
+     "d": "M56 88 L64 122",
+     "id": "teken_mannetje_5"
+    },
+    {
+     "wat": "het linkeroog",
+     "zeg": "Een oogje. Tik maar.",
+     "tap": [
+      45,
+      32
+     ],
+     "r": 2.5,
+     "id": "teken_mannetje_6"
+    },
+    {
+     "wat": "het rechteroog",
+     "zeg": "En nog een oogje.",
+     "tap": [
+      55,
+      32
+     ],
+     "r": 2.5,
+     "id": "teken_mannetje_7"
+    },
+    {
+     "wat": "de mond",
+     "zeg": "En een lachende mond.",
+     "d": "M44 39 C47 43 53 43 56 39",
+     "id": "teken_mannetje_8"
+    }
+   ]
+  },
+  "vlinder": {
+   "titel": "vlinder",
+   "stappen": [
+    {
+     "wat": "het lijfje",
+     "zeg": "Eerst het lijfje. Een smalle ovaal.",
+     "d": "M50 58 A4 22 0 0 0 50 102 A4 22 0 0 0 50 58 Z",
+     "vul": true,
+     "id": "teken_vlinder_0"
+    },
+    {
+     "wat": "de linkerbovenvleugel",
+     "zeg": "Nu de vleugels. Eerst linksboven.",
+     "d": "M46 70 C20 36 6 58 20 74 C30 84 40 80 46 76 Z",
+     "vul": true,
+     "id": "teken_vlinder_1"
+    },
+    {
+     "wat": "de linkeronderste vleugel",
+     "zeg": "Linksonder een kleinere vleugel.",
+     "d": "M46 80 C28 80 16 100 28 108 C38 114 46 98 46 86 Z",
+     "vul": true,
+     "id": "teken_vlinder_2"
+    },
+    {
+     "wat": "de rechterbovenvleugel",
+     "zeg": "Nu rechtsboven.",
+     "d": "M54 70 C80 36 94 58 80 74 C70 84 60 80 54 76 Z",
+     "vul": true,
+     "id": "teken_vlinder_3"
+    },
+    {
+     "wat": "de rechteronderste vleugel",
+     "zeg": "En rechtsonder.",
+     "d": "M54 80 C72 80 84 100 72 108 C62 114 54 98 54 86 Z",
+     "vul": true,
+     "id": "teken_vlinder_4"
+    },
+    {
+     "wat": "het hoofdje",
+     "zeg": "Het hoofdje. Een klein rondje.",
+     "d": "M50 47 A5 5 0 0 0 50 57 A5 5 0 0 0 50 47 Z",
+     "vul": true,
+     "id": "teken_vlinder_5"
+    },
+    {
+     "wat": "een sprietje",
+     "zeg": "Twee sprietjes. Eerst eentje.",
+     "d": "M48 48 C46 40 42 38 40 36",
+     "id": "teken_vlinder_6"
+    },
+    {
+     "wat": "een sprietje",
+     "zeg": "En nog eentje.",
+     "d": "M52 48 C54 40 58 38 60 36",
+     "id": "teken_vlinder_7"
+    }
+   ]
   }
  }
 }

@@ -205,9 +205,10 @@
   body[data-scherm="oren"] #terug,body[data-scherm="teken"] #terug,body[data-scherm="kleur"] #terug,
   body[data-scherm="vrij"] #terug{display:grid}
 
-  #sk-rij{display:flex;flex-wrap:wrap;gap:clamp(.6rem,2vw,1.2rem);justify-content:center;align-items:center;width:min(100%,50rem)}
-  #sk-rij .kaart-letter{--kaartmaat:min(15vw,15vh,120px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55)}
+  #sk-rij{display:flex;flex-wrap:wrap;gap:clamp(.6rem,2vw,1.2rem);justify-content:center;align-items:center;width:min(100%,62rem)}
+  #sk-rij .kaart-letter{--kaartmaat:clamp(96px,min(10vw,11vh),104px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55)}
   #sk-rij .kaart-letter.naamkaart{flex:0 0 auto;width:min(28vw,15rem);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .45);letter-spacing:.08em;margin-inline:0}
+  .sk-scheiding{flex-basis:100%;height:0}
   #sk-rij .kaart-letter.naamkaart + .kaart-letter:not(.naamkaart){margin-left:0}
 
   #sch-rij{display:flex;gap:clamp(.8rem,3vw,2rem);align-items:center;justify-content:center;flex-wrap:wrap}
@@ -371,7 +372,7 @@ import { kleurvlak, vrijtekenen } from './js/kleur.js';
 let klankVan = {};
 let klankAlle = {};                // alle klanken, ook de nog niet geleerde: voor schrijven en naam bouwen
 let schrijfData = null, vlak = null, bouwer = null, misCount = 0;
-let tekenData = null, kleurV = null, tekenStap = null;                 // id -> wat de computerstem zegt als er geen opname is
+let tekenData = null, kleurV = null, tekenStap = null, tekenSessie = null;                 // id -> wat de computerstem zegt als er geen opname is
 let woorden = [];                  // {woord, emoji, begint_met}
 let huidige = null, bezig = false;
 let sessieStart = 0, vraagTijd = 0, gastModus = null, rondeNr = 0, mijnFiguur = 'maatje';
@@ -712,10 +713,15 @@ function startTekenen(id, oren) {
   const vast = Number(new URLSearchParams(location.search).get('niveau'));
   const niveau = vast >= 1 && vast <= 4 ? vast : v.niveau;
   let nr = 0;
+  const dit = tekenSessie = {};
   misCount = 0;
   $('te-vriend').innerHTML = tekenFiguur(mijnFiguur, { mond: 'rustig' });
   scherm('teken');
-  const zegStap = () => { tekenStap = stappen[nr]; Zeg.zeg(tekenStap.id, tekenStap.zeg); };
+  const zegStap = () => {
+    // Een uitgestelde aanwijzing mag niet meer klinken als de tekening klaar is of ze het scherm verliet.
+    if (!stappen[nr] || document.body.dataset.scherm !== 'teken' || tekenSessie !== dit) return;
+    tekenStap = stappen[nr]; Zeg.zeg(tekenStap.id, tekenStap.zeg);
+  };
   vlak = schrijfvlak($('tk-host'), {
     streken: stappen,
     niveau,
@@ -858,13 +864,18 @@ function naarSchrijfKies() {
     b.onclick = () => startNaam(n);
     rij.appendChild(b);
   }
-  for (const l of schrijfData.volgorde.concat(schrijfData.cijfervolgorde)) {
+  for (const groep of [schrijfData.volgorde, schrijfData.hoofdletters, schrijfData.cijfervolgorde]) {
+    const scheiding = document.createElement('div');       // een nieuwe rij per soort: kleine letters, hoofdletters, cijfers
+    scheiding.className = 'sk-scheiding';
+    rij.appendChild(scheiding);
+    for (const l of groep) {
     const b = document.createElement('button');
     b.className = 'kaart-letter' + (Voortgang.lees(l).beheerst ? ' juist' : '');
     b.textContent = l;
     b.setAttribute('aria-label', (schrijfData.cijfers[l] ? 'schrijf het cijfer ' : 'schrijf de letter ') + l);
     b.onclick = () => startLetter(l);
     rij.appendChild(b);
+    }
   }
   scherm('schrijfkies');
 }
@@ -891,7 +902,7 @@ function startNaam(n) {
 /* Een letter zegt zijn klank, een cijfer zijn getal: dezelfde stem, andere opname. */
 const zegTeken = (l, o) => schrijfData.cijfers[l]
   ? Zeg.zeg('c' + l, Cijfers.woord(+l), o)
-  : Zeg.zeg(l, klankAlle[l], o);
+  : Zeg.zeg(l.toLowerCase(), klankAlle[l.toLowerCase()], o);   // een hoofdletter klinkt als zijn kleine letter
 
 function startLetter(l) {
   stopAlles();
