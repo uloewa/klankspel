@@ -7,12 +7,13 @@
 const DATA = new URL('../data/', import.meta.url);
 
 export async function laadLijst(basis = DATA) {
-  const [klanken, woorden, zinnen, cijfers, schrijven] = await Promise.all([
+  const [klanken, woorden, zinnen, cijfers, schrijven, tekenen] = await Promise.all([
     fetch(new URL('klanken.json', basis)).then(r => r.json()),
     fetch(new URL('woorden.json', basis)).then(r => r.json()),
     fetch(new URL('aanmoedigingen.json', basis)).then(r => r.json()),
     fetch(new URL('cijfers.json', basis)).then(r => r.json()),
-    fetch(new URL('schrijven.json', basis)).then(r => r.json())
+    fetch(new URL('schrijven.json', basis)).then(r => r.json()),
+    fetch(new URL('tekenen.json', basis)).then(r => r.json())
   ]);
 
   const uit = [];
@@ -64,6 +65,22 @@ export async function laadLijst(basis = DATA) {
       hint: 'haar naam, na het bouwen',
       terugval: nm.naam
     });
+  }
+
+  /* De aanwijzingen bij het tekenen: elke stap een zinnetje, ook voor elke ooropstelling. */
+  for (const [fid, f] of Object.entries(tekenen.figuren)) {
+    const stappen = [...f.stappen.filter(x => x.zeg), ...Object.values(f.oren).flat()];
+    for (const st of stappen) {
+      uit.push({
+        id: st.id,
+        soort: 'zin',
+        groep: 'Tekenen: ' + f.titel,
+        toon: null,
+        zeg: st.zeg,
+        hint: st.wat,
+        terugval: st.zeg
+      });
+    }
   }
 
   const zinGroepen = [

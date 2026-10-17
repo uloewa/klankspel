@@ -30,7 +30,11 @@ export function schrijfvlak(host, opties) {
   const {
     streken, niveau: startNiveau = 1,
     tolerantie = { 1: 15, 2: 14, 3: 13, 4: 12 },
-    onStreek = () => {}, onMis = () => {}, onKlaar = () => {}
+    onStreek = () => {}, onMis = () => {}, onKlaar = () => {},
+    alleenActief = false,              // tekening: alleen de streek die nu aan de beurt is krijgt hulp; anders een kluwen
+    schaal: sc = 1,                    // < 1 voor tekeningen: kleinere onderdelen, fijnere lijnen
+    klaarDikte = 9 * sc,               // een letter wordt dik groen; een tekening houdt zijn dunne inktlijn
+    streekKleur = GOED                 // letters worden groen; een tekening houdt zijn eigen inktkleur
   } = opties;
 
   host.innerHTML = '';
@@ -56,7 +60,7 @@ export function schrijfvlak(host, opties) {
     const a = p.getPointAtLength(L * .5), b = p.getPointAtLength(L * .5 + 3);
     svg.removeChild(p);
     const hoek = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
-    el('path', { d: 'M-6 -5 L5 0 L-6 5 Z', fill: ZACHT, transform: `translate(${a.x},${a.y}) rotate(${hoek})` }, gids);
+    el('path', { d: 'M-6 -5 L5 0 L-6 5 Z', fill: ZACHT, transform: `translate(${a.x},${a.y}) rotate(${hoek}) scale(${sc})` }, gids);
   }
 
   function teken() {
@@ -65,14 +69,14 @@ export function schrijfvlak(host, opties) {
        de ene streek op de andere, en dan verdween het genummerde punt onder een pijl.
        Een pijl krijgt alleen de streek die nu aan de beurt is. */
     streken.forEach((st, i) => {
-      if (i < idx || niveau > 2) return;
+      if (i < idx || niveau > 2 || (alleenActief && i !== idx)) return;
       const actief = i === idx, s0 = monsters[i][0];
       if (st.tap) {
-        el('circle', { cx: s0[0], cy: s0[1], r: 12, fill: 'none', stroke: ZACHT, 'stroke-width': 2.5,
+        el('circle', { cx: s0[0], cy: s0[1], r: (st.r || 8) + 4, fill: 'none', stroke: ZACHT, 'stroke-width': 2.5,
           'stroke-dasharray': '1 6', 'stroke-linecap': 'round' }, gids);
         return;
       }
-      el('path', { d: st.d, fill: 'none', stroke: KAART_DIEP, 'stroke-width': 16, 'stroke-linecap': 'round',
+      el('path', { d: st.d, fill: 'none', stroke: KAART_DIEP, 'stroke-width': 16 * sc, 'stroke-linecap': 'round',
         opacity: actief ? .75 : .3 }, gids);
       el('path', { d: st.d, fill: 'none', stroke: ZACHT, 'stroke-width': 2.5, 'stroke-dasharray': '1 7',
         'stroke-linecap': 'round' }, gids);
@@ -80,11 +84,11 @@ export function schrijfvlak(host, opties) {
     });
     if (niveau <= 3) {
       streken.forEach((st, i) => {
-        if (i < idx) return;
+        if (i < idx || (alleenActief && i !== idx)) return;
         const actief = i === idx, s0 = monsters[i][0];
-        el('circle', { cx: s0[0], cy: s0[1], r: 7, fill: VRIEND, stroke: VRIEND_DIEP, 'stroke-width': 2,
+        el('circle', { cx: s0[0], cy: s0[1], r: 7 * sc, fill: VRIEND, stroke: VRIEND_DIEP, 'stroke-width': 2,
           class: actief ? 'puls' : '', opacity: actief ? 1 : .55 }, gids);
-        const t = el('text', { x: s0[0], y: s0[1] + 3.2, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 700,
+        const t = el('text', { x: s0[0], y: s0[1] + 3.2 * sc, 'text-anchor': 'middle', 'font-size': 9 * sc, 'font-weight': 700,
           fill: '#fff', 'font-family': 'Andika' }, gids);
         t.textContent = i + 1;
       });
@@ -97,14 +101,14 @@ export function schrijfvlak(host, opties) {
     stopDemo(); leeg(hint);
     const st = streken[idx];
     if (st.tap) {
-      el('circle', { cx: st.tap[0], cy: st.tap[1], r: 9, fill: VRIEND, class: 'puls' }, hint);
+      el('circle', { cx: st.tap[0], cy: st.tap[1], r: (st.r || 8) + 1, fill: VRIEND, class: 'puls' }, hint);
       demoTimer = setTimeout(() => leeg(hint), 1800);
       return;
     }
     const meet = el('path', { d: st.d, visibility: 'hidden' }, hint), L = meet.getTotalLength();
-    const spoor = el('path', { d: st.d, fill: 'none', stroke: VRIEND, 'stroke-width': 6, 'stroke-linecap': 'round',
+    const spoor = el('path', { d: st.d, fill: 'none', stroke: VRIEND, 'stroke-width': 6 * sc, 'stroke-linecap': 'round',
       'stroke-dasharray': `${L} ${L}`, 'stroke-dashoffset': rustigeBeweging() ? 0 : L }, hint);
-    const pen = el('circle', { r: 7, fill: VRIEND_DIEP, stroke: '#fff', 'stroke-width': 2 }, hint);
+    const pen = el('circle', { r: 7 * sc, fill: VRIEND_DIEP, stroke: '#fff', 'stroke-width': 2 }, hint);
     if (rustigeBeweging()) return;
     let t0 = null;
     const stap = ts => {
@@ -127,7 +131,7 @@ export function schrijfvlak(host, opties) {
   /* Geslaagd als: ze begint bij het begin, eindigt bij het einde, passeert het pad in
      volgorde, en dwaalt gemiddeld niet te ver af. */
   function beoordeel() {
-    const st = streken[idx], S = monsters[idx], tol = tolerantie[niveau], N = S.length;
+    const st = streken[idx], S = monsters[idx], tol = tolerantie[niveau] * sc, N = S.length;
     if (st.tap) return afstand(punten[0], S[0]) < tol * (niveau === 4 ? 2.2 : 1.5);
     if (punten.length < 3) return false;
     if (afstand(punten[0], S[0]) > tol * 2.2) return false;
@@ -150,7 +154,7 @@ export function schrijfvlak(host, opties) {
     actiefId = e.pointerId;
     try { svg.setPointerCapture(e.pointerId); } catch {}
     punten = [coord(e)];
-    lijn = el('polyline', { fill: 'none', stroke: VINGER, 'stroke-width': 7, 'stroke-linecap': 'round',
+    lijn = el('polyline', { fill: 'none', stroke: VINGER, 'stroke-width': 7 * sc, 'stroke-linecap': 'round',
       'stroke-linejoin': 'round', points: punten[0].join(','), class: 'vervaag' }, live);
   }
   function bewegen(e) {
@@ -166,10 +170,10 @@ export function schrijfvlak(host, opties) {
     if (ok) {
       live.removeChild(oud);
       if (st.tap) {
-        const b = el('circle', { cx: st.tap[0], cy: st.tap[1], r: 8, fill: GOED, class: 'puls' }, klaar);
+        const b = el('circle', { cx: st.tap[0], cy: st.tap[1], r: st.r || 8, fill: streekKleur, class: 'puls' }, klaar);
         setTimeout(() => b.removeAttribute('class'), 1100);
       } else {
-        el('path', { d: st.d, fill: 'none', stroke: GOED, 'stroke-width': 9, 'stroke-linecap': 'round' }, klaar);
+        el('path', { d: st.d, fill: 'none', stroke: streekKleur, 'stroke-width': klaarDikte, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, klaar);
       }
       idx++;
       onStreek(idx - 1);
@@ -180,7 +184,7 @@ export function schrijfvlak(host, opties) {
 
     /* Niet gelukt: geen straf. De lijn vervaagt, en op niveau 1 toont het stipje het nog eens. */
     let weg = oud;
-    if (st.tap) { live.removeChild(oud); weg = el('circle', { cx: p0[0], cy: p0[1], r: 5, fill: VINGER, class: 'vervaag' }, live); }
+    if (st.tap) { live.removeChild(oud); weg = el('circle', { cx: p0[0], cy: p0[1], r: 5 * sc, fill: VINGER, class: 'vervaag' }, live); }
     weg.style.opacity = 0;
     setTimeout(() => weg.parentNode && weg.parentNode.removeChild(weg), 950);
     onMis(idx);

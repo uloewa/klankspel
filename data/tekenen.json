@@ -1,0 +1,161 @@
+{
+ "_lees_dit_eerst": [
+  "Tekenen met de vinger, stap voor stap. Elke figuur is een lijst 'stappen'; elke stap is een streek",
+  "('d', SVG-pad in een vlak van 100 breed en 140 hoog) of een tik ('tap': [x, y], 'r' = straal).",
+  "'vul': true = een gesloten vorm die ze straks mag inkleuren. 'zeg' = wat Thijs inspreekt bij die stap",
+  "(de opnamestudio pakt het vanzelf op: id teken_<figuur>_<nummer>); 'wat' = het onderdeel, voor de computerstem.",
+  "{ \"oren\": n } is een plaatsvervanger: daar komt de gekozen ooropstelling (n = 0 eerste oor, 1 tweede).",
+  "Gesloten vormen beginnen bovenaan en gaan tegen de klok in, zoals een kind een cirkel tekent.",
+  "Een figuur toevoegen = hier een blok bij 'figuren' zetten; de keuzekaart en de rest volgen vanzelf.",
+  "De tolerantie komt uit schrijven.json en wordt met 'schaal' verkleind: de onderdelen zijn kleiner dan een letter."
+ ],
+ "schaal": 0.7,
+ "inkt": "#5A4A3F",
+ "kleuren": [
+  "#E8956B",
+  "#E9B949",
+  "#6FA876",
+  "#5B8DB8",
+  "#B58DB8",
+  "#D9A5B3"
+ ],
+ "figuren": {
+  "konijn": {
+   "titel": "konijn",
+   "oren_keuze": {
+    "mix": "een lang en een slap oor",
+    "lang": "twee lange oren",
+    "slap": "twee slappe oren"
+   },
+   "oren": {
+    "mix": [
+     {
+      "wat": "het lange oor",
+      "zeg": "Nu een lang oor, naar boven.",
+      "d": "M40 36 C32 22 32 4 40 4 C48 4 48 24 46 34 Z",
+      "vul": true,
+      "id": "teken_konijn_oor_mix_0"
+     },
+     {
+      "wat": "het slappe oor",
+      "zeg": "En een slap oor, dat hangt naar beneden.",
+      "d": "M60 36 C74 30 84 40 80 56 C78 62 70 58 66 48 Z",
+      "vul": true,
+      "id": "teken_konijn_oor_mix_1"
+     }
+    ],
+    "lang": [
+     {
+      "wat": "het eerste oor",
+      "zeg": "Nu een lang oor, naar boven.",
+      "d": "M40 36 C32 22 32 4 40 4 C48 4 48 24 46 34 Z",
+      "vul": true,
+      "id": "teken_konijn_oor_lang_0"
+     },
+     {
+      "wat": "het tweede oor",
+      "zeg": "En nog een lang oor.",
+      "d": "M60 36 C68 22 68 4 60 4 C52 4 52 24 54 34 Z",
+      "vul": true,
+      "id": "teken_konijn_oor_lang_1"
+     }
+    ],
+    "slap": [
+     {
+      "wat": "het eerste oor",
+      "zeg": "Nu een slap oor, dat hangt naar beneden.",
+      "d": "M40 36 C26 30 16 40 20 56 C22 62 30 58 34 48 Z",
+      "vul": true,
+      "id": "teken_konijn_oor_slap_0"
+     },
+     {
+      "wat": "het tweede oor",
+      "zeg": "En nog een slap oor.",
+      "d": "M60 36 C74 30 84 40 80 56 C78 62 70 58 66 48 Z",
+      "vul": true,
+      "id": "teken_konijn_oor_slap_1"
+     }
+    ]
+   },
+   "stappen": [
+    {
+     "wat": "het hoofd",
+     "zeg": "Eerst het hoofd. Een grote ronde cirkel.",
+     "d": "M50 32 A20 20 0 0 0 50 72 A20 20 0 0 0 50 32 Z",
+     "vul": true,
+     "id": "teken_konijn_0"
+    },
+    {
+     "oren": 0
+    },
+    {
+     "oren": 1
+    },
+    {
+     "wat": "het linkeroog",
+     "zeg": "Een oogje. Tik maar.",
+     "tap": [
+      43,
+      50
+     ],
+     "r": 3,
+     "id": "teken_konijn_3"
+    },
+    {
+     "wat": "het rechteroog",
+     "zeg": "En nog een oogje.",
+     "tap": [
+      57,
+      50
+     ],
+     "r": 3,
+     "id": "teken_konijn_4"
+    },
+    {
+     "wat": "de neus",
+     "zeg": "Een neusje in het midden.",
+     "tap": [
+      50,
+      58
+     ],
+     "r": 3,
+     "id": "teken_konijn_5"
+    },
+    {
+     "wat": "de mond",
+     "zeg": "En een lachende mond.",
+     "d": "M43 64 C47 70 53 70 57 64",
+     "id": "teken_konijn_6"
+    },
+    {
+     "wat": "het lijf",
+     "zeg": "Nu het lijfje. Een dikke ronde buik.",
+     "d": "M50 72 A24 24 0 0 0 50 120 A24 24 0 0 0 50 72 Z",
+     "vul": true,
+     "id": "teken_konijn_7"
+    },
+    {
+     "wat": "de linkerpoot",
+     "zeg": "Een pootje, een kleine cirkel.",
+     "d": "M36 117 A7 7 0 0 0 36 131 A7 7 0 0 0 36 117 Z",
+     "vul": true,
+     "id": "teken_konijn_8"
+    },
+    {
+     "wat": "de rechterpoot",
+     "zeg": "En nog een pootje.",
+     "d": "M64 117 A7 7 0 0 0 64 131 A7 7 0 0 0 64 117 Z",
+     "vul": true,
+     "id": "teken_konijn_9"
+    },
+    {
+     "wat": "het staartje",
+     "zeg": "Als laatste het staartje. Een heel klein rondje.",
+     "d": "M78 106 A6 6 0 0 0 78 118 A6 6 0 0 0 78 106 Z",
+     "vul": true,
+     "id": "teken_konijn_10"
+    }
+   ]
+  }
+ }
+}
