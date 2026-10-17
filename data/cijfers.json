@@ -1,0 +1,17 @@
+{
+  "_lees_dit_eerst": [
+    "De cijfers die Ida leert lezen. Bij elk cijfer hoort de hoeveelheid (sterren), zodat een cijfer",
+    "meer is dan een tekentje: ze hoort 'drie', ziet drie sterren, en kiest het cijfer 3.",
+    "",
+    "De volgorde is bewust niet 0 tot 10: de nul komt als laatste, want 'niets' is het",
+    "moeilijkste begrip. Ze begint met de eerste drie en er komt er een bij zodra ze er",
+    "'ontgrendel_na' op rij goed heeft. Meer cijfers = meer keuzes (2, vanaf 'drie_keuzes_vanaf' actieve cijfers 3).",
+    "",
+    "'woord' is wat Thijs inspreekt en wat de computerstem zegt als er geen opname is."
+  ],
+  "volgorde": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0],
+  "start_aantal": 3,
+  "ontgrendel_na": 5,
+  "drie_keuzes_vanaf": 5,
+  "woorden": { "0": "nul", "1": "een", "2": "twee", "3": "drie", "4": "vier", "5": "vijf", "6": "zes", "7": "zeven", "8": "acht", "9": "negen", "10": "tien" }
+}

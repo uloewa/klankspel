@@ -148,9 +148,18 @@
       var(--papier);
   }
 
+  /* ---------- cijfers lezen ---------- */
+  #cf-sterren{display:grid;grid-template-columns:repeat(5,auto);gap:clamp(.3rem,1.4vw,.8rem);justify-content:center;
+    min-height:min(22vh,20vw)}
+  .cf-ster{width:min(10vw,9vh,70px);height:auto}
+  .cf-leeg{width:min(30vw,22vh,200px);height:min(18vw,13vh,110px);border:4px dashed var(--kaart-diep);border-radius:var(--rond-kaart)}
+  #cf-keuzes{display:flex;gap:clamp(.7rem,2.6vw,1.8rem);justify-content:center}
+  #cf-keuzes .kaart-letter{--kaartmaat:min(28vw,24vh,200px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55)}
+  #cf-plek .vriendje{height:clamp(60px,11vh,100px);width:auto}
+
   /* ---------- startmenu, schrijven en naam bouwen ---------- */
   #menu-plek .vriendje{height:clamp(70px,14vh,120px);width:auto}
-  #menu-tegels{display:flex;gap:clamp(1rem,4vw,2.4rem);justify-content:center;width:min(100%,46rem)}
+  #menu-tegels{display:flex;gap:clamp(.8rem,3vw,2rem);justify-content:center;width:min(100%,64rem)}
   .tegel-menu{
     flex:1;max-width:20rem;aspect-ratio:1/1;border:2px solid var(--kaart-diep);border-radius:var(--rond-kaart);
     background:var(--kaart);box-shadow:0 var(--dikte) 0 var(--kaart-diep);cursor:pointer;
@@ -252,10 +261,23 @@
     <button class="tegel-menu" id="m-lezen" aria-label="Lezen">
       <svg viewBox="0 0 100 80" aria-hidden="true"><rect x="8" y="12" width="84" height="58" rx="8" fill="#fff" stroke="#E0D2BB" stroke-width="3"/><text x="50" y="55" text-anchor="middle" font-family="Andika" font-weight="700" font-size="40" fill="#2E2A26">m a</text><circle cx="78" cy="22" r="9" fill="#E8956B"/></svg>
     </button>
+    <button class="tegel-menu" id="m-cijfers" aria-label="Cijfers">
+      <svg viewBox="0 0 100 80" aria-hidden="true"><rect x="8" y="12" width="84" height="58" rx="8" fill="#fff" stroke="#E0D2BB" stroke-width="3"/><text x="50" y="52" text-anchor="middle" font-family="Andika" font-weight="700" font-size="36" fill="#2E2A26">1 2</text><path d="M80 14l3 6.5 7 .6-5.3 4.6 1.7 6.8-6.4-3.7-6.4 3.7 1.7-6.8-5.3-4.6 7-.6z" fill="#E9B949" stroke="#C9822F" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </button>
     <button class="tegel-menu" id="m-schrijven" aria-label="Schrijven">
       <svg viewBox="0 0 100 80" aria-hidden="true"><path d="M14 66 L24 40 L72 12 L84 24 L40 56 Z" fill="#E9B949" stroke="#C9822F" stroke-width="3" stroke-linejoin="round"/><path d="M14 66 L24 40 L40 56 Z" fill="#F6EBD9" stroke="#C9822F" stroke-width="3" stroke-linejoin="round"/><path d="M18 72 C34 62 40 76 56 68 S78 66 90 70" stroke="#E8956B" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
     </button>
   </div>
+</div>
+
+<!-- 4b. cijfers lezen: ze hoort een getal, ziet evenveel sterren en kiest het cijfer -->
+<div class="scherm" id="s-cijfers">
+  <div id="cf-sterren" aria-hidden="true"></div>
+  <button id="cf-luister" class="knop-rond" aria-label="Hoor het getal opnieuw">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg>
+  </button>
+  <div id="cf-keuzes"></div>
+  <div id="cf-plek"></div>
 </div>
 
 <!-- 5. schrijven: haar naam bouwen of een letter schrijven -->
@@ -291,6 +313,7 @@ import { laadFiguren, tekenFiguur, figuur, Gekozen, MONDEN } from './js/figuren.
 import { Familie } from './js/familie.js';
 import { schrijfvlak, Voortgang } from './js/schrijf.js';
 import { naamBouwer } from './js/naam.js';
+import { Cijfers } from './js/cijfers.js';
 
 /* Stand 1, nu met de meegroei-motor: de motor kiest welke letter aan de beurt is en
    hoeveel keuzes erbij horen. Alles wat een drempel is, staat in data/motor.json. */
@@ -587,6 +610,69 @@ async function bouwKiezers() {
   }
 }
 
+/* ---- cijfers lezen ---- */
+
+const STER = '<svg class="cf-ster" viewBox="0 0 24 24"><path d="M12 2l3 7 7.5.6-5.7 4.9 1.8 7.3L12 18l-6.6 3.8 1.8-7.3L1.5 9.6 9 9z" fill="#E9B949" stroke="#C9822F" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+let cfVraag = null, cfBezig = false;
+
+async function beginCijfers() {
+  $('cf-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'rustig' });
+  sessieStart = Date.now();
+  if (!gastModus) Log.boek('start', { figuur: mijnFiguur, spel: 'cijfers' });
+  cijferRonde();
+}
+
+function hoorCijfer() {
+  if (cfVraag) return Zeg.zeg('c' + cfVraag.doel, Cijfers.woord(cfVraag.doel));
+}
+
+function cijferRonde(vraag = null) {
+  cfBezig = false;
+  gezicht('rustig', 'cf-plek');
+  scherm('cijfers');
+  cfVraag = vraag || Cijfers.volgende(cfVraag && cfVraag.doel);
+  const n = cfVraag.doel;
+  // De hoeveelheid is de betekenis van het cijfer. Bij nul: een leeg vakje, want 'niets' mag je zien.
+  $('cf-sterren').innerHTML = n === 0 ? '<div class="cf-leeg"></div>' : STER.repeat(n);
+  const veld = $('cf-keuzes');
+  veld.innerHTML = '';
+  cfVraag.opties.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'kaart-letter';
+    b.textContent = o;
+    b.setAttribute('aria-label', 'cijfer ' + o);
+    b.onclick = () => cijferAntwoord(b, o);
+    veld.appendChild(b);
+  });
+  setTimeout(hoorCijfer, 400);
+}
+
+async function cijferAntwoord(knop, gekozen) {
+  if (cfBezig) return;
+  cfBezig = true;
+  const doel = cfVraag.doel;
+  const r = Cijfers.antwoord(doel, gekozen, { bewaar: !gastModus });
+  if (!gastModus) Log.boek(r.juist ? 'cijfer_juist' : 'cijfer_fout', { cijfer: doel, gekozen });
+
+  if (r.juist) {
+    knop.classList.add('juist');
+    gezicht('blij', 'cf-plek');
+    await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+    await Zeg.zeg('c' + doel, Cijfers.woord(doel), { wacht: true });
+    if (Date.now() - sessieStart > Motor.sessieMs()) return einde();   // altijd na een juist antwoord
+    setTimeout(() => cijferRonde(), 300);
+    return;
+  }
+
+  // Fout: geen straf. Het getal nog eens, de juiste kaart licht op, dezelfde vraag makkelijker.
+  knop.classList.add('mis');
+  gezicht('kijkt', 'cf-plek');
+  await Zeg.zeg('c' + doel, Cijfers.woord(doel), { wacht: true });
+  const goed = [...document.querySelectorAll('#cf-keuzes .kaart-letter')].find(b => b.textContent === String(doel));
+  if (goed) goed.classList.add('wijs');
+  setTimeout(() => cijferRonde(Cijfers.herhaal(doel)), 900);
+}
+
 /* ---- schrijven ---- */
 
 const TERUG = { menu: 'start', schrijfkies: 'menu', naam: 'schrijfkies', schrijf: 'schrijfkies' };
@@ -712,7 +798,10 @@ function startLetter(l) {
   await bouwKiezers();
   schrijfData = await fetch('./data/schrijven.json').then(r => r.json());
   $('luister').onclick = hoorVraag;
+  Cijfers.laad(await fetch('./data/cijfers.json').then(r => r.json()));
   $('m-lezen').onclick = beginSessie;
+  $('m-cijfers').onclick = beginCijfers;
+  $('cf-luister').onclick = hoorCijfer;
   $('m-schrijven').onclick = naarSchrijfKies;
   $('terug').onclick = terugGaan;
   $('verder').onclick = () => ronde();

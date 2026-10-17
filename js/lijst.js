@@ -7,10 +7,12 @@
 const DATA = new URL('../data/', import.meta.url);
 
 export async function laadLijst(basis = DATA) {
-  const [klanken, woorden, zinnen] = await Promise.all([
+  const [klanken, woorden, zinnen, cijfers, schrijven] = await Promise.all([
     fetch(new URL('klanken.json', basis)).then(r => r.json()),
     fetch(new URL('woorden.json', basis)).then(r => r.json()),
-    fetch(new URL('aanmoedigingen.json', basis)).then(r => r.json())
+    fetch(new URL('aanmoedigingen.json', basis)).then(r => r.json()),
+    fetch(new URL('cijfers.json', basis)).then(r => r.json()),
+    fetch(new URL('schrijven.json', basis)).then(r => r.json())
   ]);
 
   const uit = [];
@@ -37,6 +39,30 @@ export async function laadLijst(basis = DATA) {
       zeg: w.woord,
       hint: 'begint met de ' + w.begint_met,
       terugval: w.woord
+    });
+  }
+
+  for (const n of cijfers.volgorde) {
+    uit.push({
+      id: 'c' + n,
+      soort: 'cijfer',
+      groep: 'Cijfers',
+      toon: String(n),
+      zeg: cijfers.woorden[n],
+      hint: 'het cijfer ' + n,
+      terugval: cijfers.woorden[n]
+    });
+  }
+
+  for (const nm of schrijven.namen) {
+    uit.push({
+      id: 'naam_' + nm.naam,
+      soort: 'woord',
+      groep: 'Namen',
+      toon: nm.naam,
+      zeg: nm.naam,
+      hint: 'haar naam, na het bouwen',
+      terugval: nm.naam
     });
   }
 
