@@ -203,7 +203,8 @@
   body[data-scherm="menu"] #terug,body[data-scherm="schrijfkies"] #terug,
   body[data-scherm="naam"] #terug,body[data-scherm="schrijf"] #terug,body[data-scherm="tekenkies"] #terug,
   body[data-scherm="oren"] #terug,body[data-scherm="teken"] #terug,body[data-scherm="kleur"] #terug,
-  body[data-scherm="vrij"] #terug{display:grid}
+  body[data-scherm="vrij"] #terug,body[data-scherm="spel"] #terug,body[data-scherm="muur"] #terug,
+  body[data-scherm="cijfers"] #terug,body[data-scherm="einde"] #terug{display:grid}
 
   #sk-rij{display:flex;flex-wrap:wrap;gap:clamp(.6rem,2vw,1.2rem);justify-content:center;align-items:center;width:min(100%,62rem)}
   #sk-rij .kaart-letter{--kaartmaat:clamp(96px,min(10vw,11vh),104px);width:var(--kaartmaat);height:var(--kaartmaat);font-size:calc(var(--kaartmaat) * .55)}
@@ -375,6 +376,10 @@ let schrijfData = null, vlak = null, bouwer = null, misCount = 0;
 let tekenData = null, kleurV = null, tekenStap = null, tekenSessie = null;                 // id -> wat de computerstem zegt als er geen opname is
 let woorden = [];                  // {woord, emoji, begint_met}
 let huidige = null, bezig = false;
+/* Terug naar het menu mag midden in een spel. Wat dan nog in de wachtrij staat (volgende ronde,
+   klank na een antwoord) hoort bij het oude spel en mag haar niet terugslepen. */
+let spelGen = 0;
+const later = (fn, ms) => { const g = spelGen; setTimeout(() => { if (g === spelGen) fn(); }, ms); };
 let sessieStart = 0, vraagTijd = 0, gastModus = null, rondeNr = 0, mijnFiguur = 'maatje';
 
 const $ = id => document.getElementById(id);
@@ -503,7 +508,7 @@ function ronde(vraag = null) {
     });
   }
 
-  setTimeout(() => {
+  later(() => {
     hoorVraag();
     vraagTijd = Date.now();       // vanaf hier meten we hoe snel ze tikt
   }, 400);
@@ -519,6 +524,7 @@ function hoorVraag() {
 }
 
 async function antwoord(knop, gekozen) {
+  const gen = spelGen;
   if (bezig) return;
   const reactie = vraagTijd ? Date.now() - vraagTijd : null;
 
@@ -534,13 +540,15 @@ async function antwoord(knop, gekozen) {
     gezicht('blij');
     if (!gastModus) Log.boek('juist', { letter: huidige.doel, ms: reactie, telt: r.teltMee, woord: huidige.woord?.woord });
     await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+    if (gen !== spelGen) return;
     /* En dan de klank nog eens. Precies op het moment dat ze trots is, wordt de
        koppeling letter-klank opnieuw gelegd — de goedkoopste leerwinst die er ligt. */
     await Zeg.zeg(huidige.doel, klankVan[huidige.doel], { wacht: true });
+    if (gen !== spelGen) return;
 
     // De sessie eindigt ALTIJD op een juist antwoord, nooit midden in een fout.
     if (r.magAfronden || Date.now() - sessieStart > Motor.sessieMs()) return einde();
-    setTimeout(() => ronde(), 300);
+    later(() => ronde(), 300);
     return;
   }
 
@@ -549,6 +557,7 @@ async function antwoord(knop, gekozen) {
   knop.classList.add('mis');
   gezicht('kijkt');
   await Zeg.zeg(huidige.doel, klankVan[huidige.doel], { wacht: true });
+  if (gen !== spelGen) return;
   const juisteKaart = [...document.querySelectorAll('#keuzes .kaart-letter')]
     .find(b => b.textContent === huidige.doel);
   if (juisteKaart) {
@@ -559,14 +568,16 @@ async function antwoord(knop, gekozen) {
 
   if (r.gefrustreerd) {
     await Zeg.zeg(troost(), 'goed geprobeerd', { wacht: true });
+    if (gen !== spelGen) return;
     return klankmuur();
   }
   // Meteen dezelfde vraag, makkelijker gemaakt: een mislukte poging helpt pas als ze
   // er kort daarna wél in slaagt.
-  setTimeout(() => ronde(Motor.herhaal(huidige.doel)), 700);
+  later(() => ronde(Motor.herhaal(huidige.doel)), 700);
 }
 
 async function antwoordFamilie(knop, gekozen) {
+  const gen = spelGen;
   const juist = gekozen === huidige.doel;
   Familie.telJuist(huidige.doel, juist);
   if (!gastModus) Log.boek(juist ? 'juist' : 'fout', { soort: 'familie', wie: huidige.persoon.naam });
@@ -576,9 +587,11 @@ async function antwoordFamilie(knop, gekozen) {
     knop.classList.add('juist');
     gezicht('blij');
     await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+    if (gen !== spelGen) return;
     await Zeg.zeg(Familie.stemId(huidige.doel), huidige.persoon.naam, { wacht: true });
+    if (gen !== spelGen) return;
     if (Date.now() - sessieStart > Motor.sessieMs()) return einde();
-    setTimeout(() => ronde(), 300);
+    later(() => ronde(), 300);
     return;
   }
 
@@ -586,6 +599,7 @@ async function antwoordFamilie(knop, gekozen) {
   knop.classList.add('mis');
   gezicht('kijkt');
   await Zeg.zeg(Familie.stemId(huidige.doel), huidige.persoon.naam, { wacht: true });
+  if (gen !== spelGen) return;
   const juisteKaart = [...document.querySelectorAll('#keuzes .kaart-letter')]
     .find(b => b.textContent === huidige.persoon.naam);
   if (juisteKaart) {
@@ -593,7 +607,7 @@ async function antwoordFamilie(knop, gekozen) {
     juisteKaart.onclick = () => Zeg.zeg(Familie.stemId(huidige.doel), huidige.persoon.naam);
   }
   // en de foto komt terug helpen bij de volgende keer (telJuist heeft hem verlaagd)
-  setTimeout(() => ronde(), 1400);
+  later(() => ronde(), 1400);
 }
 
 /* De klankmuur is de uitweg, niet een straf: hier kan niets fout gaan.
@@ -618,7 +632,9 @@ async function einde() {
   $('eind-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'blij', klas: 'vriendje blij' });
   $('eind-plek').onclick = naarMenu;      // tikken op het figuurtje brengt haar terug bij het menu
   scherm('einde');
+  const gen = spelGen;
   await Zeg.zeg('s3', 'jij hebt goed gewerkt vandaag', { wacht: true });
+  if (gen !== spelGen) return;
   await Zeg.zeg('s2', 'we stoppen hier, tot morgen');
 }
 
@@ -639,7 +655,9 @@ async function beginSessie() {
   $('maatje-plek').innerHTML = tekenFiguur(mijnFiguur, { mond: 'rustig' });
   sessieStart = Date.now();
   if (!gastModus) Log.boek('start', { figuur: mijnFiguur });
+  const gen = spelGen;
   await Zeg.zeg('s1', 'dag, zullen we luisteren?', { wacht: true });
+  if (gen !== spelGen) return;
   ronde();
 }
 
@@ -800,10 +818,11 @@ function cijferRonde(vraag = null) {
     b.onclick = () => cijferAntwoord(b, o);
     veld.appendChild(b);
   });
-  setTimeout(hoorCijfer, 400);
+  later(hoorCijfer, 400);
 }
 
 async function cijferAntwoord(knop, gekozen) {
+  const gen = spelGen;
   if (cfBezig) return;
   cfBezig = true;
   const doel = cfVraag.doel;
@@ -814,9 +833,11 @@ async function cijferAntwoord(knop, gekozen) {
     knop.classList.add('juist');
     gezicht('blij', 'cf-plek');
     await Zeg.zeg(prijs(), 'goed zo', { wacht: true });
+    if (gen !== spelGen) return;
     await Zeg.zeg('c' + doel, Cijfers.woord(doel), { wacht: true });
+    if (gen !== spelGen) return;
     if (Date.now() - sessieStart > Motor.sessieMs()) return einde();   // altijd na een juist antwoord
-    setTimeout(() => cijferRonde(), 300);
+    later(() => cijferRonde(), 300);
     return;
   }
 
@@ -824,17 +845,20 @@ async function cijferAntwoord(knop, gekozen) {
   knop.classList.add('mis');
   gezicht('kijkt', 'cf-plek');
   await Zeg.zeg('c' + doel, Cijfers.woord(doel), { wacht: true });
+  if (gen !== spelGen) return;
   const goed = [...document.querySelectorAll('#cf-keuzes .kaart-letter')].find(b => b.textContent === String(doel));
   if (goed) goed.classList.add('wijs');
-  setTimeout(() => cijferRonde(Cijfers.herhaal(doel)), 900);
+  later(() => cijferRonde(Cijfers.herhaal(doel)), 900);
 }
 
 /* ---- schrijven ---- */
 
 const TERUG = { menu: 'start', schrijfkies: 'menu', naam: 'schrijfkies', schrijf: 'schrijfkies',
-                tekenkies: 'menu', oren: 'tekenkies', teken: 'tekenkies', kleur: 'tekenkies', vrij: 'tekenkies' };
+                tekenkies: 'menu', oren: 'tekenkies', teken: 'tekenkies', kleur: 'tekenkies', vrij: 'tekenkies',
+                spel: 'menu', muur: 'menu', cijfers: 'menu', einde: 'menu' };
 
 function stopAlles() {
+  spelGen++;
   Zeg.stop();
   if (vlak) { vlak.stop(); vlak = null; }
   if (bouwer) { bouwer.stop(); bouwer = null; }
